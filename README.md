@@ -1,4 +1,4 @@
-# 🏥 AI-Powered Herbal Medicine Assistant
+# 🏥 HealthBridge - AI-powered dual health recommendation system
 
 An intelligent system that combines **machine learning**, **knowledge graphs**, and **AI** to provide personalized herbal medicine recommendations based on symptoms.
 
