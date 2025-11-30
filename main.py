@@ -23,7 +23,20 @@ try:
         check_confidence_threshold,
         add_medical_disclaimer
     )
+    # PRIORITY 4: Import advanced features
+    from src.multi_disease_detector import MultiDiseaseDetector, format_multi_disease_output
+    from src.severity_classifier import SeverityClassifier, format_severity_output
+    from src.personalized_recommender import (
+        PersonalizedRecommender,
+        PatientProfile,
+        format_personalized_output
+    )
     AI_MODULE_OK = True
+    ADVANCED_FEATURES_OK = True
+except ImportError as e_advanced:
+    # Advanced features optional
+    AI_MODULE_OK = True
+    ADVANCED_FEATURES_OK = False
 except ImportError as e:
     print(f"⚠️  WARNING: Could not import AI module: {e}")
     print("   Checking if src/__init__.py exists...")
@@ -60,6 +73,118 @@ def check_ai_module() -> Optional[str]:
     if not os.path.exists("src/__init__.py"):
         return "⚠️  WARNING: src/__init__.py is missing. The module may not work properly."
     return None
+
+
+def get_patient_profile() -> Optional[PatientProfile]:
+    """Interactively collect patient profile for personalized recommendations."""
+    print("\n📋 Patient Profile (Optional - for personalized recommendations)")
+    print("   Press Enter to skip any question.\n")
+    
+    try:
+        # Age
+        age_input = input("   Age (years): ").strip()
+        age = int(age_input) if age_input else None
+        
+        # Gender
+        gender_input = input("   Gender (male/female/other): ").strip().lower()
+        gender = gender_input if gender_input in ['male', 'female', 'other'] else None
+        
+        # Special conditions
+        is_pregnant = False
+        is_breastfeeding = False
+        if gender == 'female' and age and 15 <= age <= 50:
+            pregnant_input = input("   Currently pregnant? (y/n): ").strip().lower()
+            is_pregnant = pregnant_input in ['y', 'yes']
+            
+            if not is_pregnant:
+                bf_input = input("   Currently breastfeeding? (y/n): ").strip().lower()
+                is_breastfeeding = bf_input in ['y', 'yes']
+        
+        # Comorbidities
+        diabetes_input = input("   Do you have diabetes? (y/n): ").strip().lower()
+        has_diabetes = diabetes_input in ['y', 'yes']
+        
+        hypertension_input = input("   Do you have high blood pressure? (y/n): ").strip().lower()
+        has_hypertension = hypertension_input in ['y', 'yes']
+        
+        kidney_input = input("   Do you have kidney disease? (y/n): ").strip().lower()
+        has_kidney_disease = kidney_input in ['y', 'yes']
+        
+        # Create profile
+        profile = PatientProfile(
+            age=age,
+            gender=gender,
+            is_pregnant=is_pregnant,
+            is_breastfeeding=is_breastfeeding,
+            has_diabetes=has_diabetes,
+            has_hypertension=has_hypertension,
+            has_kidney_disease=has_kidney_disease
+        )
+        
+        # Show summary
+        populations = profile.get_special_populations()
+        if populations:
+            print(f"\n   ✅ Profile created: {', '.join([p.value.replace('_', ' ').title() for p in populations])}")
+        else:
+            print("\n   ✅ Profile created: Standard adult")
+        
+        return profile
+    
+    except KeyboardInterrupt:
+        print("\n   Skipped - using default profile")
+        return None
+    except Exception as e:
+        print(f"\n   Error creating profile: {e}")
+        return None
+
+
+def analyze_with_advanced_features(symptoms: str, knowledge: dict, patient: Optional[PatientProfile] = None, use_ai: bool = True):
+    """Analyze symptoms with all advanced features enabled."""
+    try:
+        # Step 1: Get basic prediction
+        response = generate_comprehensive_answer(
+            symptoms, 
+            knowledge, 
+            use_ai=use_ai,
+            include_drugs=True
+        )
+        
+        primary_disease = response.get('disease', 'Unknown')
+        primary_confidence = response.get('confidence', 0.5)
+        
+        # Step 2: Multi-disease detection
+        detector = MultiDiseaseDetector()
+        disease_analysis = detector.analyze_symptom_overlap(symptoms)
+        
+        # Step 3: Severity assessment
+        severity_classifier = SeverityClassifier()
+        severity = severity_classifier.analyze_severity(symptoms, primary_disease)
+        
+        # Step 4: Personalized recommendations (if patient profile provided)
+        recommendations = None
+        if patient:
+            recommender = PersonalizedRecommender()
+            recommendations = recommender.personalize_recommendations(
+                disease=primary_disease,
+                severity_level=severity.level,
+                patient=patient
+            )
+        
+        return {
+            'basic_response': response,
+            'disease_analysis': disease_analysis,
+            'severity': severity,
+            'recommendations': recommendations,
+            'primary_disease': primary_disease,
+            'primary_confidence': primary_confidence
+        }
+    
+    except Exception as e:
+        print(f"⚠️  Advanced features error: {e}")
+        print("   Falling back to standard analysis...\n")
+        # Fallback to basic response
+        response = generate_comprehensive_answer(symptoms, knowledge, use_ai=use_ai, include_drugs=True)
+        return {'basic_response': response, 'fallback': True}
 
 
 def main():
@@ -110,10 +235,31 @@ def main():
         
         print("💡 TIP: For best results, enter your symptoms WITHOUT spelling mistakes")
         print("   (e.g., 'asthma', 'fever', 'headache', not 'asthma', 'fevr', 'headeache')\n")
+        
+        # Check if advanced features are available
+        if ADVANCED_FEATURES_OK:
+            print("✨ ADVANCED FEATURES ENABLED:")
+            print("   • Multi-disease detection")
+            print("   • Symptom severity scoring")
+            print("   • Personalized recommendations\n")
+        
         print("=" * 65 + "\n")
         
         # Check if running in interactive or pipe mode
         is_interactive = sys.stdin.isatty()
+        
+        # Get advanced mode preference and patient profile (interactive only)
+        use_advanced = False
+        patient_profile = None
+        if is_interactive and ADVANCED_FEATURES_OK:
+            advanced_input = input("🎯 Use advanced features? (y/n): ").strip().lower()
+            use_advanced = advanced_input in ['y', 'yes']
+            
+            if use_advanced:
+                profile_input = input("📋 Create patient profile? (y/n): ").strip().lower()
+                if profile_input in ['y', 'yes']:
+                    patient_profile = get_patient_profile()
+                print()
         
         if not is_interactive:
             # Pipe mode: read from stdin
@@ -197,19 +343,62 @@ def main():
                     print()
                     
                     try:
-                        # Generate comprehensive answer
-                        response = generate_comprehensive_answer(
-                            user_input, 
-                            knowledge, 
-                            use_ai=use_ai,
-                            include_drugs=True
-                        )
-                        
-                        if use_ai and response.get("ai_insights"):
-                            print("✅ AI insights generated successfully!\n")
-                        
-                        # Display formatted answer
-                        print(format_answer_for_display(response))
+                        # Choose analysis mode
+                        if use_advanced and ADVANCED_FEATURES_OK:
+                            # Advanced analysis with all features
+                            print("✨ Running advanced analysis...\n")
+                            result = analyze_with_advanced_features(
+                                user_input,
+                                knowledge,
+                                patient=patient_profile,
+                                use_ai=use_ai
+                            )
+                            
+                            if result.get('fallback'):
+                                # Fallback to basic display
+                                response = result['basic_response']
+                                if use_ai and response.get("ai_insights"):
+                                    print("✅ AI insights generated successfully!\n")
+                                print(format_answer_for_display(response))
+                            else:
+                                # Display advanced results
+                                response = result['basic_response']
+                                if use_ai and response.get("ai_insights"):
+                                    print("✅ AI insights generated successfully!\n")
+                                
+                                # Show basic response first
+                                print(format_answer_for_display(response))
+                                
+                                # Show advanced features
+                                print("\n" + "="*70)
+                                print("ADVANCED ANALYSIS")
+                                print("="*70)
+                                
+                                # Multi-disease detection
+                                if result.get('disease_analysis'):
+                                    print(format_multi_disease_output(result['disease_analysis']))
+                                
+                                # Severity assessment
+                                if result.get('severity'):
+                                    print(format_severity_output(result['severity']))
+                                
+                                # Personalized recommendations
+                                if result.get('recommendations'):
+                                    print(format_personalized_output(result['recommendations']))
+                        else:
+                            # Standard analysis
+                            response = generate_comprehensive_answer(
+                                user_input, 
+                                knowledge, 
+                                use_ai=use_ai,
+                                include_drugs=True
+                            )
+                            
+                            if use_ai and response.get("ai_insights"):
+                                print("✅ AI insights generated successfully!\n")
+                            
+                            # Display formatted answer
+                            print(format_answer_for_display(response))
                         
                         # QUICK WIN #4B: Low Confidence Warning - Check AFTER prediction
                         predicted_confidence = response.get('confidence', 1.0)
