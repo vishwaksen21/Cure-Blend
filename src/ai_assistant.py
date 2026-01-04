@@ -53,6 +53,17 @@ try:
 except Exception:
     HAS_LLM = False
 
+# Try to import dataset integrator (optional)
+try:
+    from .dataset_integration import get_integrator
+    HAS_INTEGRATOR = True
+except Exception:
+    try:
+        from dataset_integration import get_integrator
+        HAS_INTEGRATOR = True
+    except Exception:
+        HAS_INTEGRATOR = False
+
 # Preserve your import logic for symptom predictors and drug DB (fallback safe)
 USE_ENHANCED = False
 try:
@@ -516,10 +527,108 @@ SAMPLE_TARGETS = [
 ]
 
 SAMPLE_DRUGS = [
-    {"name": "Paracetamol", "brand_names": ["Crocin", "Panadol"], "type": "Analgesic", "dosage": "500-1000 mg every 4-6h", "purpose": "Reduce fever and pain", "availability": "OTC", "price_range": "₹10-50", "side_effects": "Liver toxicity in overdose"},
-    {"name": "Oral Rehydration Salts", "brand_names": ["ORS"], "type": "Oral solution", "dosage": "As directed", "purpose": "Rehydration", "availability": "OTC", "price_range": "₹20-100", "side_effects": "None if used correctly"},
-    {"name": "Omeprazole", "brand_names": ["Prilosec"], "type": "Proton pump inhibitor", "dosage": "20-40 mg daily", "purpose": "Reduce stomach acid", "availability": "Prescription", "price_range": "₹40-200", "side_effects": "Headache, nausea"},
+    # Pain & Fever Relief (Comprehensive)
+    {"name": "Paracetamol", "brand_names": ["Crocin", "Panadol", "Dolo"], "type": "Analgesic/Antipyretic", "dosage": "500-1000 mg every 4-6h", "purpose": "Reduce fever and pain", "availability": "OTC", "price_range": "₹5-50", "side_effects": "Liver toxicity in overdose"},
+    {"name": "Ibuprofen", "brand_names": ["Brufen", "Advil", "Combiflam"], "type": "NSAID", "dosage": "200-400 mg every 6-8h", "purpose": "Reduce pain, inflammation and fever", "availability": "OTC", "price_range": "₹10-80", "side_effects": "GI upset, ulcers with long-term use"},
+    {"name": "Aspirin", "brand_names": ["Disprin", "Ecosprin"], "type": "NSAID", "dosage": "300-600 mg every 4-6h", "purpose": "Pain, fever, inflammation, blood thinning", "availability": "OTC", "price_range": "₹5-40", "side_effects": "GI bleeding, avoid in children"},
+    {"name": "Diclofenac", "brand_names": ["Voveran", "Voltaren"], "type": "NSAID", "dosage": "50 mg three times daily", "purpose": "Severe pain, arthritis, muscle strain", "availability": "Prescription", "price_range": "₹15-100", "side_effects": "GI upset, cardiovascular risk"},
+    
+    # Throat & Respiratory (Expanded)
+    {"name": "Amoxicillin", "brand_names": ["Amoxil", "Mox"], "type": "Antibiotic", "dosage": "500 mg three times daily", "purpose": "Bacterial infections including throat and respiratory", "availability": "Prescription", "price_range": "₹30-150", "side_effects": "Diarrhea, rash, allergic reactions"},
+    {"name": "Azithromycin", "brand_names": ["Azithral", "Zithromax"], "type": "Antibiotic", "dosage": "500 mg once daily for 3 days", "purpose": "Respiratory and throat infections", "availability": "Prescription", "price_range": "₹50-200", "side_effects": "Nausea, diarrhea"},
+    {"name": "Lozenges", "brand_names": ["Strepsils", "Vicks", "Cofsils"], "type": "Throat Lozenge", "dosage": "1 lozenge every 2-3h", "purpose": "Soothe throat pain and irritation", "availability": "OTC", "price_range": "₹20-100", "side_effects": "Minimal - avoid excessive use"},
+    {"name": "Betadine Gargle", "brand_names": ["Betadine"], "type": "Antiseptic", "dosage": "Gargle 3-4 times daily", "purpose": "Throat infection, tonsillitis, pharyngitis", "availability": "OTC", "price_range": "₹50-150", "side_effects": "Temporary staining, avoid if iodine allergy"},
+    {"name": "Chlorpheniramine", "brand_names": ["Avil", "Chlor-Trimeton"], "type": "Antihistamine", "dosage": "4 mg every 4-6h", "purpose": "Relieve allergy symptoms, runny nose, sneezing", "availability": "OTC", "price_range": "₹10-50", "side_effects": "Drowsiness, dry mouth"},
+    
+    # Cough & Cold (Comprehensive)
+    {"name": "Dextromethorphan", "brand_names": ["Benadryl", "Robitussin"], "type": "Cough Suppressant", "dosage": "10-20 mg every 4h", "purpose": "Suppress dry cough", "availability": "OTC", "price_range": "₹50-150", "side_effects": "Drowsiness, dizziness"},
+    {"name": "Guaifenesin", "brand_names": ["Mucinex"], "type": "Expectorant", "dosage": "200-400 mg every 4h", "purpose": "Loosen mucus and phlegm", "availability": "OTC", "price_range": "₹40-120", "side_effects": "Nausea, vomiting, dizziness"},
+    {"name": "Cetirizine", "brand_names": ["Zyrtec", "Alerid"], "type": "Antihistamine", "dosage": "10 mg once daily", "purpose": "Allergy relief, cold symptoms, runny nose", "availability": "OTC", "price_range": "₹15-80", "side_effects": "Minimal drowsiness"},
+    {"name": "Pseudoephedrine", "brand_names": ["Sudafed", "Sinarest"], "type": "Decongestant", "dosage": "30-60 mg every 4-6h", "purpose": "Nasal congestion, sinus pressure", "availability": "OTC", "price_range": "₹40-120", "side_effects": "Insomnia, nervousness, increased BP"},
+    {"name": "Salbutamol", "brand_names": ["Asthalin", "Ventolin"], "type": "Bronchodilator", "dosage": "2 puffs every 4-6h", "purpose": "Asthma, bronchitis, breathing difficulty", "availability": "Prescription", "price_range": "₹80-250", "side_effects": "Tremors, palpitations"},
+    
+    # Digestive (Comprehensive)
+    {"name": "Omeprazole", "brand_names": ["Prilosec", "Omez"], "type": "Proton pump inhibitor", "dosage": "20-40 mg daily", "purpose": "Reduce stomach acid, treat GERD and ulcers", "availability": "Prescription", "price_range": "₹40-200", "side_effects": "Headache, nausea"},
+    {"name": "Ranitidine", "brand_names": ["Zantac", "Aciloc"], "type": "H2 Blocker", "dosage": "150 mg twice daily", "purpose": "Reduce stomach acid and heartburn", "availability": "OTC", "price_range": "₹20-100", "side_effects": "Headache, constipation"},
+    {"name": "Antacids", "brand_names": ["Gelusil", "ENO", "Digene"], "type": "Antacid", "dosage": "1-2 tablets as needed", "purpose": "Quick relief from acidity and heartburn", "availability": "OTC", "price_range": "₹10-60", "side_effects": "Constipation or diarrhea"},
+    {"name": "Loperamide", "brand_names": ["Imodium", "Lopamide"], "type": "Anti-diarrheal", "dosage": "2-4 mg after each loose stool", "purpose": "Stop diarrhea", "availability": "OTC", "price_range": "₹30-120", "side_effects": "Constipation, dizziness"},
+    {"name": "Oral Rehydration Salts", "brand_names": ["ORS", "Electral"], "type": "Oral solution", "dosage": "As directed", "purpose": "Rehydration for diarrhea and vomiting", "availability": "OTC", "price_range": "₹10-50", "side_effects": "None if used correctly"},
+    {"name": "Domperidone", "brand_names": ["Motilium", "Domstal"], "type": "Anti-emetic", "dosage": "10 mg three times daily", "purpose": "Relieve nausea and vomiting", "availability": "Prescription", "price_range": "₹20-100", "side_effects": "Dry mouth, headache"},
+    {"name": "Mebeverine", "brand_names": ["Colospa"], "type": "Antispasmodic", "dosage": "135 mg three times daily", "purpose": "IBS, abdominal cramps, stomach spasms", "availability": "Prescription", "price_range": "₹50-200", "side_effects": "Dizziness, headache"},
+    {"name": "Probiotics", "brand_names": ["Econorm", "Bifilac"], "type": "Probiotic", "dosage": "1 sachet twice daily", "purpose": "Restore gut flora, diarrhea, digestive health", "availability": "OTC", "price_range": "₹100-300", "side_effects": "Minimal - mild gas"},
+    
+    # Infections & Antibiotics
+    {"name": "Ciprofloxacin", "brand_names": ["Ciplox", "Cifran"], "type": "Antibiotic", "dosage": "500 mg twice daily", "purpose": "UTI, kidney infection, bacterial infections", "availability": "Prescription", "price_range": "₹30-150", "side_effects": "Nausea, diarrhea, tendon damage"},
+    {"name": "Metronidazole", "brand_names": ["Flagyl"], "type": "Antibiotic", "dosage": "400 mg three times daily", "purpose": "Bacterial and parasitic infections, dental infections", "availability": "Prescription", "price_range": "₹20-100", "side_effects": "Metallic taste, nausea, avoid alcohol"},
+    {"name": "Doxycycline", "brand_names": ["Doxy-1"], "type": "Antibiotic", "dosage": "100 mg twice daily", "purpose": "Respiratory infections, acne, malaria prevention", "availability": "Prescription", "price_range": "₹40-200", "side_effects": "Photosensitivity, GI upset"},
+    
+    # Skin Conditions
+    {"name": "Hydrocortisone Cream", "brand_names": ["Cortisone"], "type": "Topical Steroid", "dosage": "Apply thin layer 2-3 times daily", "purpose": "Skin inflammation, rash, eczema, allergic reactions", "availability": "OTC", "price_range": "₹30-150", "side_effects": "Skin thinning with prolonged use"},
+    {"name": "Antifungal Cream", "brand_names": ["Clotrimazole", "Candid"], "type": "Antifungal", "dosage": "Apply twice daily", "purpose": "Fungal skin infections, ringworm, athlete's foot", "availability": "OTC", "price_range": "₹40-150", "side_effects": "Local irritation"},
+    {"name": "Calamine Lotion", "brand_names": ["Caladryl"], "type": "Topical", "dosage": "Apply as needed", "purpose": "Itching, minor burns, insect bites, rashes", "availability": "OTC", "price_range": "₹30-100", "side_effects": "Minimal"},
+    
+    # Diabetes Management
+    {"name": "Metformin", "brand_names": ["Glucophage", "Glycomet"], "type": "Antidiabetic", "dosage": "500-1000 mg twice daily", "purpose": "Type 2 diabetes, blood sugar control", "availability": "Prescription", "price_range": "₹20-150", "side_effects": "GI upset, lactic acidosis (rare)"},
+    {"name": "Glimepiride", "brand_names": ["Amaryl"], "type": "Antidiabetic", "dosage": "1-4 mg daily", "purpose": "Type 2 diabetes", "availability": "Prescription", "price_range": "₹30-200", "side_effects": "Hypoglycemia, weight gain"},
+    
+    # Hypertension
+    {"name": "Amlodipine", "brand_names": ["Norvasc"], "type": "Calcium Channel Blocker", "dosage": "5-10 mg daily", "purpose": "High blood pressure, angina", "availability": "Prescription", "price_range": "₹20-150", "side_effects": "Ankle swelling, headache"},
+    {"name": "Losartan", "brand_names": ["Cozaar"], "type": "ARB", "dosage": "50-100 mg daily", "purpose": "Hypertension, kidney protection in diabetes", "availability": "Prescription", "price_range": "₹50-250", "side_effects": "Dizziness, hyperkalemia"},
+    
+    # Pain (Specialized)
+    {"name": "Tramadol", "brand_names": ["Ultracet"], "type": "Opioid Analgesic", "dosage": "50-100 mg every 4-6h", "purpose": "Moderate to severe pain", "availability": "Prescription", "price_range": "₹30-200", "side_effects": "Dizziness, nausea, dependence risk"},
+    {"name": "Capsaicin Cream", "brand_names": ["Zostrix"], "type": "Topical Analgesic", "dosage": "Apply 3-4 times daily", "purpose": "Muscle pain, arthritis, nerve pain", "availability": "OTC", "price_range": "₹150-400", "side_effects": "Burning sensation initially"},
+    
+    # Mental Health
+    {"name": "Melatonin", "brand_names": ["Melatonin"], "type": "Sleep Aid", "dosage": "3-5 mg at bedtime", "purpose": "Insomnia, sleep disorders", "availability": "OTC", "price_range": "₹200-600", "side_effects": "Drowsiness, vivid dreams"},
+    
+    # General Health & Immunity
+    {"name": "Multivitamin", "brand_names": ["Revital", "Supradyn"], "type": "Supplement", "dosage": "1 tablet daily", "purpose": "General health and immunity support", "availability": "OTC", "price_range": "₹100-500", "side_effects": "Minimal when taken as directed"},
+    {"name": "Vitamin C", "brand_names": ["Limcee", "Celin"], "type": "Supplement", "dosage": "500-1000 mg daily", "purpose": "Immunity boost, cold prevention, antioxidant", "availability": "OTC", "price_range": "₹50-200", "side_effects": "Diarrhea at high doses"},
+    {"name": "Vitamin D3", "brand_names": ["Calcirol"], "type": "Supplement", "dosage": "1000-2000 IU daily", "purpose": "Bone health, immunity, deficiency treatment", "availability": "OTC", "price_range": "₹100-400", "side_effects": "Minimal"},
+    {"name": "Zinc", "brand_names": ["Zincovit"], "type": "Supplement", "dosage": "15-30 mg daily", "purpose": "Immunity, wound healing, cold duration reduction", "availability": "OTC", "price_range": "₹50-300", "side_effects": "Nausea if taken on empty stomach"},
 ]
+
+# ------------------------------------------------------------------------------------
+# Compound to Herb Mapping (for user-friendly herbal recommendations)
+# ------------------------------------------------------------------------------------
+COMPOUND_TO_HERB = {
+    'withaferin a': 'Ashwagandha',
+    'curcumin': 'Turmeric',
+    'gingerol': 'Ginger',
+    'azadirachtin': 'Neem',
+    'eugenol': 'Clove',
+    'allicin': 'Garlic',
+    'quercetin': 'Onion',
+    'menthol': 'Peppermint',
+    'thymol': 'Thyme',
+    'ursolic acid': 'Holy Basil (Tulsi)',
+    'berberine': 'Turmeric',
+    'piperine': 'Black Pepper',
+    'papain': 'Papaya',
+    'bromelain': 'Pineapple',
+    'resveratrol': 'Grapes',
+    'capsaicin': 'Cayenne Pepper',
+    'anthocyanin': 'Berries',
+    'silymarin': 'Milk Thistle',
+}
+
+# ------------------------------------------------------------------------------------
+# Drug Safety Warnings (for restricted/controversial medications)
+# ------------------------------------------------------------------------------------
+DRUG_SAFETY_WARNINGS = {
+    'Nimesulide': '⚠️ RESTRICTED: Not recommended for children under 12. Use only under medical supervision. Risk of liver toxicity.',
+    'Metamizole': '⚠️ RESTRICTED: Banned in many countries due to agranulocytosis risk. Use only if prescribed by specialist.',
+    'Aspirin': '⚠️ WARNING: Not for children under 12 (Reye\'s syndrome risk). Consult doctor if on blood thinners.',
+    'Ibuprofen': '⚠️ CAUTION: Not for prolonged use. Risk of GI bleeding and kidney damage. Take with food.',
+    'Diclofenac': '⚠️ RESTRICTED: Cardiovascular risk. Not for heart disease patients. Prescription required in many countries.',
+    'Tramadol': '⚠️ CONTROLLED: Opioid - addiction risk. Schedule H drug. Only use as prescribed. Not for children.',
+    'Ciprofloxacin': '⚠️ WARNING: Risk of tendon rupture. Not for children/pregnant women. Complete full course.',
+    'Doxycycline': '⚠️ WARNING: Avoid sunlight exposure. Not for children under 8 or pregnant women. Stains teeth.',
+    'Metronidazole': '⚠️ WARNING: Absolutely NO ALCOHOL while taking or 48h after. Causes severe reaction.',
+    'Amoxicillin': '⚠️ CAUTION: Check for penicillin allergy before use. Complete full course even if better.',
+    'Azithromycin': '⚠️ CAUTION: Complete full course. Not for heart arrhythmia patients.',
+}
 
 # ------------------------------------------------------------------------------------
 # Large lookup dictionaries (spelling_map, disease_mapping, condition_info, icons)
@@ -817,30 +926,105 @@ def suggest_drugs_for_disease(disease: str, top_n: int = 5) -> List[Dict]:
     # Fallback simple matching from SAMPLE_DRUGS
     matched = []
     disease_l = (disease or "").lower()
-    # Simple disease -> drug mapping heuristics
+    
+    # Comprehensive disease -> drug mapping heuristics with expanded keywords
     for d in SAMPLE_DRUGS:
         name = d.get("name", "")
         purpose = d.get("purpose", "").lower()
         dtype = d.get("type", "").lower()
         
-        # Check if drug matches disease keywords
-        if any(k in disease_l for k in ["fever", "headache", "pain", "muscle", "strain", "back", "sprain"]) and ("pain" in purpose or "analgesic" in dtype or "nsaid" in dtype):
-            matched.append(d)
-        elif any(k in disease_l for k in ["stomach", "gastric", "gastro", "ulcer", "acidity", "indigestion"]) and any(k in purpose for k in ["acid", "gastric", "reflux", "motility"]):
-            matched.append(d)
-        elif any(k in disease_l for k in ["kidney", "stone", "urinary"]) and any(k in purpose for k in ["pain", "kidney", "urinary", "stone"]):
-            matched.append(d)
-        elif not matched:
-            # Generic offer pain relievers for unmatched diseases
-            if "pain" in purpose or "analgesic" in dtype:
-                matched.append(d)
+        # Throat conditions (tonsillitis, pharyngitis, sore throat)
+        if any(k in disease_l for k in ["throat", "tonsil", "pharyn", "laryn", "strep"]):
+            if any(k in purpose for k in ["throat", "infection", "pain", "soothe"]) or \
+               "antibiotic" in dtype or "lozenge" in dtype or "analgesic" in dtype or "antiseptic" in dtype:
+                if d not in matched:
+                    matched.append(d)
+        
+        # Respiratory (cold, cough, flu, bronchitis, asthma)
+        if any(k in disease_l for k in ["cough", "cold", "flu", "respiratory", "bronch", "pneumo", "asthma", "wheez", "sinus", "congestion"]):
+            if any(k in purpose for k in ["cough", "cold", "respiratory", "mucus", "allergy", "congestion", "breathing", "asthma", "bronch"]) or \
+               "antihistamine" in dtype or "cough" in dtype or "expectorant" in dtype or "decongestant" in dtype or "bronchodilator" in dtype:
+                if d not in matched:
+                    matched.append(d)
+        
+        # Fever and general pain
+        if any(k in disease_l for k in ["fever", "headache", "pain", "muscle", "strain", "back", "sprain", "migraine", "general", "ache", "body", "joint"]):
+            if any(k in purpose for k in ["fever", "pain", "inflammation", "ache"]) or \
+               "analgesic" in dtype or "nsaid" in dtype or "antipyretic" in dtype:
+                if d not in matched:
+                    matched.append(d)
+        
+        # Digestive issues (comprehensive)
+        if any(k in disease_l for k in ["stomach", "gastric", "gastro", "ulcer", "acidity", "indigestion", "reflux", "gerd", "heartburn", "ibs", "crohn", "colitis"]):
+            if any(k in purpose for k in ["acid", "gastric", "reflux", "stomach", "heartburn", "digestive", "ibs", "cramps", "spasms"]) or \
+               "pump inhibitor" in dtype or "h2 blocker" in dtype or "antacid" in dtype or "antispasmodic" in dtype or "probiotic" in dtype:
+                if d not in matched:
+                    matched.append(d)
+        
+        # Diarrhea, vomiting
+        if any(k in disease_l for k in ["diarr", "loose", "motion", "vomit", "nausea"]):
+            if any(k in purpose for k in ["diarr", "rehydr", "vomit", "nausea", "gut", "flora"]) or \
+               "anti-diarrheal" in dtype or "anti-emetic" in dtype or "rehydration" in purpose or "probiotic" in dtype:
+                if d not in matched:
+                    matched.append(d)
+        
+        # Allergy & Skin
+        if any(k in disease_l for k in ["allerg", "rash", "itch", "hive", "eczema", "dermat", "skin"]):
+            if any(k in purpose for k in ["allergy", "itch", "rash", "skin", "inflammation"]) or \
+               "antihistamine" in dtype or "steroid" in dtype or "antifungal" in dtype or "topical" in dtype:
+                if d not in matched:
+                    matched.append(d)
+        
+        # Infections (bacterial, fungal)
+        if any(k in disease_l for k in ["infection", "bacterial", "uti", "kidney", "fungal", "ringworm", "athlete"]):
+            if any(k in purpose for k in ["infection", "bacterial", "uti", "kidney", "fungal"]) or \
+               "antibiotic" in dtype or "antifungal" in dtype:
+                if d not in matched:
+                    matched.append(d)
+        
+        # Diabetes
+        if any(k in disease_l for k in ["diabet", "sugar", "glucose"]):
+            if any(k in purpose for k in ["diabetes", "blood sugar", "glucose"]) or \
+               "antidiabetic" in dtype:
+                if d not in matched:
+                    matched.append(d)
+        
+        # Hypertension
+        if any(k in disease_l for k in ["hypertens", "blood pressure", "bp", "high pressure"]):
+            if any(k in purpose for k in ["blood pressure", "hypertension", "bp"]) or \
+               "calcium channel blocker" in dtype or "arb" in dtype:
+                if d not in matched:
+                    matched.append(d)
+        
+        # Sleep & Mental Health
+        if any(k in disease_l for k in ["insomnia", "sleep", "anxiety", "stress", "depression"]):
+            if any(k in purpose for k in ["sleep", "insomnia"]) or \
+               "sleep aid" in dtype:
+                if d not in matched:
+                    matched.append(d)
+        
+        # General health & immunity
+        if any(k in disease_l for k in ["immun", "weak", "fatigue", "tired", "vitamin", "deficiency"]):
+            if any(k in purpose for k in ["immunity", "health", "vitamin", "bone", "antioxidant"]) or \
+               "supplement" in dtype:
+                if d not in matched:
+                    matched.append(d)
         
         if len(matched) >= top_n:
             break
     
-    # If still no matches, provide general pain relievers as last resort
+    # If still no matches, provide general remedies (improved fallback)
     if not matched:
-        matched = [d for d in SAMPLE_DRUGS if "pain" in d.get("purpose", "").lower() or "analgesic" in d.get("type", "").lower()][:top_n]
+        # For unknown/general conditions, offer comprehensive general support
+        for d in SAMPLE_DRUGS:
+            purpose = d.get("purpose", "").lower()
+            dtype = d.get("type", "").lower()
+            # Include pain relievers, immunity support, and common OTC drugs
+            if any(k in purpose for k in ["pain", "fever", "immunity", "health"]) or \
+               "analgesic" in dtype or "nsaid" in dtype or "supplement" in dtype:
+                matched.append(d)
+            if len(matched) >= top_n:
+                break
     
     return matched[:top_n]
 
@@ -950,45 +1134,110 @@ def suggest_ingredients_for_disease(
     """
     # If gensim/joblib not available or files missing, fallback
     if KeyedVectors is None or joblib is None or np is None:
-        # Heuristic: map some diseases to common herbs
+        # Enhanced heuristic mapping with comprehensive coverage
         d = (disease or "").lower()
         heuristics = []
-        if "gastro" in d or "diarr" in d or "stomach" in d:
-            heuristics = [("Ginger", 0.85), ("Peppermint", 0.75), ("Turmeric", 0.6), ("ORS", 0.5)]
-        elif "fever" in d or "dengue" in d or "malaria" in d:
-            heuristics = [("Withaferin A", 0.7), ("Papaya leaf extract", 0.6), ("Turmeric", 0.5)]
-        elif "cold" in d or "cough" in d or "bronch" in d or "asthma" in d:
-            heuristics = [("Tulsi", 0.8), ("Ginger", 0.7), ("Licorice", 0.6)]
-        elif "headache" in d or "migraine" in d:
-            heuristics = [("Peppermint", 0.7), ("Feverfew", 0.6), ("Turmeric", 0.5)]
-        elif "muscle" in d or "strain" in d or "back pain" in d or "sprain" in d or "pain" in d:
-            heuristics = [("Turmeric", 0.8), ("Ginger", 0.75), ("Arnica", 0.7), ("Boswellia", 0.65)]
-        elif "kidney" in d or "stone" in d or "renal" in d or "urinary" in d:
-            heuristics = [("Chanca Piedra", 0.8), ("Dandelion", 0.7), ("Cranberry", 0.65), ("Hydrangea", 0.6)]
+        
+        # Digestive & Gastrointestinal
+        if any(k in d for k in ["gastro", "diarr", "stomach", "digest", "ibs", "crohn", "colitis", "acid", "reflux", "gerd", "nausea", "vomit"]):
+            heuristics = [("Ginger", 0.90), ("Peppermint", 0.85), ("Turmeric", 0.80), ("Chamomile", 0.75), ("Fennel", 0.70)]
+        
+        # Respiratory & Throat
+        elif any(k in d for k in ["cold", "cough", "bronch", "asthma", "throat", "tonsil", "pharyn", "laryn", "respiratory", "pneumo", "sinus"]):
+            heuristics = [("Tulsi (Holy Basil)", 0.90), ("Ginger", 0.85), ("Licorice", 0.80), ("Eucalyptus", 0.75), ("Honey", 0.70)]
+        
+        # Fever & Infections
+        elif any(k in d for k in ["fever", "dengue", "malaria", "viral", "infection", "flu", "influenza"]):
+            heuristics = [("Tulsi (Holy Basil)", 0.88), ("Giloy", 0.85), ("Neem", 0.80), ("Turmeric", 0.75), ("Black Pepper", 0.70)]
+        
+        # Pain & Inflammation
+        elif any(k in d for k in ["headache", "migraine", "pain", "muscle", "strain", "back", "sprain", "arthritis", "rheumat", "inflamm"]):
+            heuristics = [("Turmeric", 0.90), ("Ginger", 0.85), ("Boswellia", 0.82), ("Willow Bark", 0.78), ("Devil's Claw", 0.75)]
+        
+        # Kidney & Urinary
+        elif any(k in d for k in ["kidney", "stone", "renal", "urinary", "uti", "bladder", "uric"]):
+            heuristics = [("Punarnava", 0.88), ("Gokshura", 0.85), ("Cranberry", 0.80), ("Dandelion", 0.75), ("Parsley", 0.70)]
+        
+        # Liver & Detox
+        elif any(k in d for k in ["liver", "hepat", "jaundice", "detox", "toxin"]):
+            heuristics = [("Milk Thistle", 0.90), ("Dandelion Root", 0.85), ("Turmeric", 0.82), ("Bhuiamlaki", 0.80), ("Artichoke", 0.75)]
+        
+        # Diabetes & Blood Sugar
+        elif any(k in d for k in ["diabet", "sugar", "glucose", "insulin"]):
+            heuristics = [("Bitter Melon (Karela)", 0.88), ("Fenugreek", 0.85), ("Cinnamon", 0.82), ("Gymnema", 0.80), ("Jamun", 0.75)]
+        
+        # Hypertension & Cardiovascular
+        elif any(k in d for k in ["hypertens", "blood pressure", "bp", "cardiov", "heart", "cholesterol"]):
+            heuristics = [("Garlic", 0.88), ("Hawthorn", 0.85), ("Arjuna", 0.82), ("Hibiscus", 0.78), ("Flaxseed", 0.75)]
+        
+        # Skin Conditions
+        elif any(k in d for k in ["skin", "rash", "eczema", "psoria", "acne", "dermat", "itch"]):
+            heuristics = [("Neem", 0.90), ("Aloe Vera", 0.88), ("Turmeric", 0.85), ("Tea Tree Oil", 0.80), ("Manjistha", 0.75)]
+        
+        # Anxiety & Stress
+        elif any(k in d for k in ["anxiety", "stress", "tension", "nervous", "panic", "worry"]):
+            heuristics = [("Ashwagandha", 0.90), ("Brahmi", 0.85), ("Chamomile", 0.82), ("Lavender", 0.78), ("Valerian Root", 0.75)]
+        
+        # Insomnia & Sleep
+        elif any(k in d for k in ["insomnia", "sleep", "sleepless"]):
+            heuristics = [("Valerian Root", 0.88), ("Ashwagandha", 0.85), ("Chamomile", 0.82), ("Passionflower", 0.78), ("Lavender", 0.75)]
+        
+        # Immunity & General Health
+        elif any(k in d for k in ["immun", "weak", "fatigue", "general", "wellness", "health", "tired"]):
+            heuristics = [("Ashwagandha", 0.88), ("Giloy", 0.85), ("Tulsi", 0.82), ("Amla", 0.80), ("Ginseng", 0.75)]
+        
+        # Allergy
+        elif any(k in d for k in ["allerg", "hives", "rhinitis", "hay fever"]):
+            heuristics = [("Butterbur", 0.85), ("Stinging Nettle", 0.82), ("Quercetin", 0.80), ("Turmeric", 0.75), ("Ginger", 0.70)]
+        
+        # Women's Health
+        elif any(k in d for k in ["menstrual", "period", "pms", "menstru", "cramp"]):
+            heuristics = [("Shatavari", 0.88), ("Ginger", 0.85), ("Chamomile", 0.80), ("Cinnamon", 0.75), ("Fennel", 0.70)]
+        
+        # Anemia & Blood Health
+        elif any(k in d for k in ["anemia", "anaemia", "iron", "blood"]):
+            heuristics = [("Punarnava", 0.85), ("Beetroot", 0.82), ("Spirulina", 0.80), ("Nettle", 0.75), ("Moringa", 0.70)]
+        
+        # Weight Management
+        elif any(k in d for k in ["weight", "obesity", "fat", "overweight"]):
+            heuristics = [("Green Tea", 0.85), ("Garcinia Cambogia", 0.80), ("Triphala", 0.78), ("Guggul", 0.75), ("Cinnamon", 0.70)]
+        
+        # Default/Generic conditions
         else:
-            heuristics = [("Turmeric", 0.6), ("Ginger", 0.55), ("Neem", 0.45)]
+            heuristics = [("Turmeric", 0.70), ("Ginger", 0.68), ("Tulsi", 0.65), ("Neem", 0.60), ("Ashwagandha", 0.58)]
+        
         return heuristics[:5]
 
     # If embeddings present, try to use them (kept backward-compatible)
     try:
         if not os.path.exists(embeddings_path) or not os.path.exists(model_path):
-            # Files don't exist, use heuristic fallback
+            # Files don't exist, use enhanced heuristic fallback
             d = (disease or "").lower()
             heuristics = []
-            if "gastro" in d or "diarr" in d or "stomach" in d:
-                heuristics = [("Ginger", 0.85), ("Peppermint", 0.75), ("Turmeric", 0.6), ("ORS", 0.5)]
-            elif "fever" in d or "dengue" in d or "malaria" in d:
-                heuristics = [("Withaferin A", 0.7), ("Papaya leaf extract", 0.6), ("Turmeric", 0.5)]
-            elif "cold" in d or "cough" in d or "bronch" in d or "asthma" in d:
-                heuristics = [("Tulsi", 0.8), ("Ginger", 0.7), ("Licorice", 0.6)]
-            elif "headache" in d or "migraine" in d:
-                heuristics = [("Peppermint", 0.7), ("Feverfew", 0.6), ("Turmeric", 0.5)]
-            elif "muscle" in d or "strain" in d or "back pain" in d or "sprain" in d or "pain" in d:
-                heuristics = [("Turmeric", 0.8), ("Ginger", 0.75), ("Arnica", 0.7), ("Boswellia", 0.65)]
-            elif "kidney" in d or "stone" in d or "renal" in d or "urinary" in d:
-                heuristics = [("Chanca Piedra", 0.8), ("Dandelion", 0.7), ("Cranberry", 0.65), ("Hydrangea", 0.6)]
+            
+            # Same comprehensive mapping as above
+            if any(k in d for k in ["gastro", "diarr", "stomach", "digest", "ibs", "acid", "reflux", "gerd"]):
+                heuristics = [("Ginger", 0.90), ("Peppermint", 0.85), ("Turmeric", 0.80), ("Chamomile", 0.75), ("Fennel", 0.70)]
+            elif any(k in d for k in ["cold", "cough", "bronch", "asthma", "throat", "tonsil", "respiratory"]):
+                heuristics = [("Tulsi (Holy Basil)", 0.90), ("Ginger", 0.85), ("Licorice", 0.80), ("Eucalyptus", 0.75), ("Honey", 0.70)]
+            elif any(k in d for k in ["fever", "dengue", "malaria", "viral", "infection"]):
+                heuristics = [("Tulsi (Holy Basil)", 0.88), ("Giloy", 0.85), ("Neem", 0.80), ("Turmeric", 0.75), ("Black Pepper", 0.70)]
+            elif any(k in d for k in ["headache", "migraine", "pain", "muscle", "strain", "arthritis", "inflamm"]):
+                heuristics = [("Turmeric", 0.90), ("Ginger", 0.85), ("Boswellia", 0.82), ("Willow Bark", 0.78), ("Devil's Claw", 0.75)]
+            elif any(k in d for k in ["kidney", "stone", "renal", "urinary", "uti"]):
+                heuristics = [("Punarnava", 0.88), ("Gokshura", 0.85), ("Cranberry", 0.80), ("Dandelion", 0.75), ("Parsley", 0.70)]
+            elif any(k in d for k in ["diabet", "sugar", "glucose"]):
+                heuristics = [("Bitter Melon (Karela)", 0.88), ("Fenugreek", 0.85), ("Cinnamon", 0.82), ("Gymnema", 0.80), ("Jamun", 0.75)]
+            elif any(k in d for k in ["hypertens", "blood pressure", "bp", "cardiov"]):
+                heuristics = [("Garlic", 0.88), ("Hawthorn", 0.85), ("Arjuna", 0.82), ("Hibiscus", 0.78), ("Flaxseed", 0.75)]
+            elif any(k in d for k in ["skin", "rash", "eczema", "acne", "itch"]):
+                heuristics = [("Neem", 0.90), ("Aloe Vera", 0.88), ("Turmeric", 0.85), ("Tea Tree Oil", 0.80), ("Manjistha", 0.75)]
+            elif any(k in d for k in ["anxiety", "stress", "nervous"]):
+                heuristics = [("Ashwagandha", 0.90), ("Brahmi", 0.85), ("Chamomile", 0.82), ("Lavender", 0.78), ("Valerian Root", 0.75)]
+            elif any(k in d for k in ["immun", "weak", "general", "health"]):
+                heuristics = [("Ashwagandha", 0.88), ("Giloy", 0.85), ("Tulsi", 0.82), ("Amla", 0.80), ("Ginseng", 0.75)]
             else:
-                heuristics = [("Turmeric", 0.6), ("Ginger", 0.55), ("Neem", 0.45)]
+                heuristics = [("Turmeric", 0.70), ("Ginger", 0.68), ("Tulsi", 0.65), ("Neem", 0.60), ("Ashwagandha", 0.58)]
             return heuristics[:5]
         emb = KeyedVectors.load(embeddings_path)
         model = joblib.load(model_path)
@@ -1063,6 +1312,88 @@ def generate_ai_insights(
     Each provider has a 15-second timeout. Graceful fallback on any failure.
     """
     
+    # CRITICAL FIX: Force disease-specific insights for major conditions
+    # Do NOT trust LLM to follow disease-specific guidelines - use pre-verified safe text
+    disease_lower = (disease or "").lower()
+    herbs_list = ", ".join([h for h, _ in herbal_recommendations[:4]]) if herbal_recommendations else "herbal options"
+    drugs_list = ", ".join([d.get("name") for d in drug_recommendations[:4]]) if drug_recommendations else "appropriate medications"
+    
+    # DENGUE / HEMORRHAGIC FEVER
+    if 'dengue' in disease_lower or 'hemorrhagic' in disease_lower:
+        return (
+            f"Based on the reported symptoms, suspected {disease} requires immediate medical attention and proper diagnosis. "
+            f"\n\n💊 MEDICATION SAFETY FOR DENGUE: For fever and pain relief, Paracetamol (Acetaminophen) is the ONLY safe option. "
+            f"NSAIDs such as Aspirin, Ibuprofen, and Diclofenac must be strictly avoided due to increased bleeding risk and potential for hemorrhagic complications. "
+            f"These anti-inflammatory drugs can interfere with platelet function, which is already compromised in Dengue fever. "
+            f"\n\n🌿 Herbal remedies like {herbs_list} may provide supportive care through immune-boosting and anti-inflammatory properties. "
+            f"Traditional herbs such as Papaya leaf extract and Giloy are commonly used in dengue management, though scientific evidence varies. "
+            f"These should complement, not replace, medical treatment. "
+            f"\n\n🏥 CRITICAL: Dengue requires medical supervision. Adequate hydration (oral rehydration solutions), rest, and monitoring for warning signs "
+            f"(severe abdominal pain, persistent vomiting, bleeding gums, blood in stool/vomit, difficulty breathing, restlessness) are essential. "
+            f"Seek immediate emergency care if any warning signs develop. Regular monitoring of platelet count and hematocrit is necessary."
+        )
+    
+    # COVID-19
+    if 'covid' in disease_lower or 'coronavirus' in disease_lower or 'sars-cov-2' in disease_lower:
+        return (
+            f"Based on the reported symptoms, suspected {disease} requires proper testing, isolation, and monitoring. "
+            f"\n\n💊 MEDICATION FOR COVID-19: Treatment is primarily supportive. Paracetamol (Acetaminophen) is recommended for fever and body aches. "
+            f"NSAIDs like Ibuprofen may be used cautiously if advised by a healthcare provider, but Paracetamol is preferred as first-line treatment. "
+            f"Aspirin is not routinely recommended for COVID-19 symptom management. Antibiotics are NOT effective against viral infections and should only be used if bacterial complications develop. "
+            f"\n\n🌿 Herbal support: {herbs_list} may provide immune support and symptom relief. Turmeric, ginger, and tulsi (holy basil) are traditionally used for their anti-inflammatory and immune-modulating properties. "
+            f"However, these should complement medical care, not replace it. Stay well-hydrated and ensure adequate rest. "
+            f"\n\n🏥 IMPORTANT: Isolate immediately, get tested, monitor oxygen levels if possible. Seek urgent medical care if you experience difficulty breathing, persistent chest pain/pressure, "
+            f"confusion, inability to stay awake, or bluish lips/face. Most cases are mild, but monitoring is essential. Follow local health authority guidelines for isolation and care."
+        )
+    
+    # MALARIA
+    if 'malaria' in disease_lower:
+        return (
+            f"Based on the reported symptoms, suspected {disease} requires immediate medical attention and diagnostic testing (blood smear or rapid diagnostic test). "
+            f"\n\n💊 MEDICATION FOR MALARIA: Malaria is a life-threatening parasitic infection that requires prescription antimalarial drugs. Paracetamol may be used for fever management under medical supervision. "
+            f"Self-medication is dangerous. Treatment depends on the Plasmodium species, severity, and local drug resistance patterns. Common antimalarials include Artemisinin-based combination therapies (ACTs), Chloroquine (for sensitive strains), or Quinine. "
+            f"\n\n🌿 Herbal remedies like {herbs_list} may provide supportive symptom relief but CANNOT treat the underlying parasitic infection. "
+            f"Traditional herbs should never replace proven antimalarial medication. Neem and cinchona bark have historical use, but modern antimalarials are essential for cure. "
+            f"\n\n🏥 CRITICAL: Malaria can progress rapidly to severe complications (cerebral malaria, organ failure). Seek immediate medical care for diagnosis and treatment. "
+            f"Untreated malaria can be fatal. Prevention includes mosquito bite prevention (bed nets, repellents) and prophylactic medication in endemic areas."
+        )
+    
+    # DIABETES
+    if 'diabetes' in disease_lower or 'hyperglycemia' in disease_lower:
+        return (
+            f"Based on the reported symptoms, suspected {disease} requires medical evaluation, blood glucose testing, and potentially long-term management. "
+            f"\n\n💊 MEDICATION FOR DIABETES: Management depends on type and severity. Type 1 requires insulin therapy. Type 2 may be managed with lifestyle changes and/or medications like Metformin, Sulfonylureas, or GLP-1 agonists. "
+            f"Blood sugar control is critical to prevent complications (neuropathy, retinopathy, cardiovascular disease). Regular monitoring and medical follow-up are essential. "
+            f"\n\n🌿 Herbal support: {herbs_list} may help with blood sugar regulation. Fenugreek, cinnamon, and bitter gourd have shown modest effects in studies. "
+            f"However, these should complement, not replace, prescribed medications. Dietary changes (low glycemic index foods, portion control) and regular exercise are equally important. "
+            f"\n\n🏥 IMPORTANT: Diabetes is a chronic condition requiring lifelong management. Work with healthcare providers to create a personalized plan. "
+            f"Monitor for complications and emergency signs (very high/low blood sugar, diabetic ketoacidosis). Regular HbA1c testing and specialist consultations are recommended."
+        )
+    
+    # HYPERTENSION
+    if 'hypertension' in disease_lower or 'high blood pressure' in disease_lower:
+        return (
+            f"Based on the reported symptoms, suspected {disease} requires medical evaluation and blood pressure monitoring. "
+            f"\n\n💊 MEDICATION FOR HYPERTENSION: Blood pressure control typically requires prescription medications (ACE inhibitors, ARBs, calcium channel blockers, diuretics, or beta-blockers). "
+            f"Choice depends on blood pressure levels, age, and comorbidities. Lifestyle modifications (diet, exercise, stress management) are critical first steps and adjuncts to medication. "
+            f"\n\n🌿 Herbal support: {herbs_list} may provide complementary benefits. Garlic, hibiscus tea, and certain adaptogens have shown modest blood pressure-lowering effects. "
+            f"However, these should not replace prescribed antihypertensive medications. Dietary approaches (DASH diet, low sodium) and regular physical activity are proven effective. "
+            f"\n\n🏥 IMPORTANT: Untreated hypertension increases risk of stroke, heart attack, and kidney disease. Regular monitoring and medical follow-up are essential. "
+            f"Seek emergency care for hypertensive crisis (BP >180/120 with symptoms like severe headache, chest pain, vision changes, or difficulty breathing)."
+        )
+    
+    # ASTHMA
+    if 'asthma' in disease_lower:
+        return (
+            f"Based on the reported symptoms, suspected {disease} requires proper diagnosis (spirometry, peak flow monitoring) and individualized management plan. "
+            f"\n\n💊 MEDICATION FOR ASTHMA: Treatment includes quick-relief inhalers (bronchodilators like Albuterol) for acute symptoms and long-term controller medications (inhaled corticosteroids, long-acting beta-agonists) for daily management. "
+            f"Severity determines treatment approach. Identifying and avoiding triggers (allergens, smoke, cold air, exercise) is crucial. An asthma action plan helps manage exacerbations. "
+            f"\n\n🌿 Herbal support: {herbs_list} may provide anti-inflammatory effects. Turmeric, ginger, and certain adaptogenic herbs have been studied for respiratory support. "
+            f"However, these cannot replace rescue or controller inhalers. Breathing exercises and proper inhaler technique are essential components of management. "
+            f"\n\n🏥 IMPORTANT: Asthma exacerbations can be life-threatening. Seek emergency care for severe shortness of breath, inability to speak in full sentences, chest tightness not relieved by rescue inhaler, "
+            f"or bluish lips/nails. Always carry rescue inhaler and follow your asthma action plan."
+        )
+    
     herb_names = [ing for ing, _ in herbal_recommendations]
     herbs_str = ", ".join(herb_names) if herb_names else "traditional remedies"
     drug_names = [drug.get("name") for drug in drug_recommendations]
@@ -1073,10 +1404,15 @@ Provide evidence-based, professional insights about herbal remedies and medicati
 Always emphasize consulting healthcare professionals for diagnosis and treatment. 
 Be concise, clear, medically accurate, and educational."""
     
+    # Disease-specific guidance for AI (dengue/hemorrhagic conditions) - NOW UNUSED FOR DENGUE
+    dengue_warning = ""
+    if 'dengue' in disease_lower or 'hemorrhagic' in disease_lower:
+        dengue_warning = "\n\nIMPORTANT: For suspected dengue or hemorrhagic fever, NSAIDs (Aspirin, Ibuprofen, Diclofenac) are contraindicated due to bleeding risk. Only Paracetamol should be recommended under medical supervision."
+    
     user_prompt = f"""Patient symptoms: {user_input}
 Detected condition: {disease}
 Recommended herbs: {herbs_str}
-Recommended medications: {drugs_str}
+Recommended medications: {drugs_str}{dengue_warning}
 
 Provide a professional health assessment covering:
 1. How these remedies may help address the condition
@@ -1202,17 +1538,34 @@ Format: 3-4 short paragraphs, 180-220 words total."""
     herbs_list = ", ".join([h for h, _ in herbal_recommendations[:4]]) if herbal_recommendations else "herbal options"
     drugs_list = ", ".join([d.get("name") for d in drug_recommendations[:4]]) if drug_recommendations else "appropriate medications"
     
-    # Build base summary
-    summary = (
-        f"Based on the reported symptoms, {disease} has been identified as the primary concern. "
-        f"\n\nHerbal options like {herbs_list} may provide supportive relief through anti-inflammatory and soothing properties. "
-        f"These natural remedies work gradually and are often used for long-term management and prevention. "
-        f"\n\nPharmaceutical treatments such as {drugs_list} offer evidence-based symptom management with proven efficacy and faster relief. "
-        f"These medications are suitable for acute condition management and immediate symptom control. "
-        f"\n\nThe optimal approach depends on condition severity, symptom duration, and individual factors. "
-        f"Always consult a qualified healthcare professional before starting any treatment. "
-        f"Seek immediate medical attention if you experience severe symptoms, difficulty breathing, high fever, or other concerning signs."
-    )
+    # CRITICAL: Check if Dengue - generate dengue-safe insights
+    disease_lower = (disease or "").lower()
+    if 'dengue' in disease_lower or 'hemorrhagic' in disease_lower:
+        # Dengue-specific safe insights (NO NSAIDs mentioned)
+        summary = (
+            f"Based on the reported symptoms, suspected {disease} requires immediate medical attention and proper diagnosis. "
+            f"\n\n💊 MEDICATION SAFETY FOR DENGUE: For fever and pain relief, Paracetamol (Acetaminophen) is the ONLY safe option. "
+            f"NSAIDs such as Aspirin, Ibuprofen, and Diclofenac must be strictly avoided due to increased bleeding risk and potential for hemorrhagic complications. "
+            f"These anti-inflammatory drugs can interfere with platelet function, which is already compromised in Dengue fever. "
+            f"\n\n🌿 Herbal remedies like {herbs_list} may provide supportive care through immune-boosting and anti-inflammatory properties. "
+            f"Traditional herbs such as Papaya leaf extract and Giloy are commonly used in dengue management, though scientific evidence varies. "
+            f"These should complement, not replace, medical treatment. "
+            f"\n\n🏥 CRITICAL: Dengue requires medical supervision. Adequate hydration (oral rehydration solutions), rest, and monitoring for warning signs "
+            f"(severe abdominal pain, persistent vomiting, bleeding gums, blood in stool/vomit, difficulty breathing, restlessness) are essential. "
+            f"Seek immediate emergency care if any warning signs develop. Regular monitoring of platelet count and hematocrit is necessary."
+        )
+    else:
+        # Build base summary for non-Dengue conditions
+        summary = (
+            f"Based on the reported symptoms, {disease} has been identified as the primary concern. "
+            f"\n\nHerbal options like {herbs_list} may provide supportive relief through anti-inflammatory and soothing properties. "
+            f"These natural remedies work gradually and are often used for long-term management and prevention. "
+            f"\n\nPharmaceutical treatments such as {drugs_list} offer evidence-based symptom management with proven efficacy and faster relief. "
+            f"These medications are suitable for acute condition management and immediate symptom control. "
+            f"\n\nThe optimal approach depends on condition severity, symptom duration, and individual factors. "
+            f"Always consult a qualified healthcare professional before starting any treatment. "
+            f"Seek immediate medical attention if you experience severe symptoms, difficulty breathing, high fever, or other concerning signs."
+        )
     
     # Add special insights for hormonal conditions
     disease_lower = (disease or "").lower()
@@ -1284,18 +1637,69 @@ def format_answer_for_display(response: Dict) -> str:
     answer_lines.append(f"{BLUE}{BOLD}📋 SYMPTOM ANALYSIS{RESET}")
     answer_lines.append(f"{BLUE}" + "━" * 78 + f"{RESET}\n")
     answer_lines.append(f"  📝 Your Input: \"{response.get('input')}\"")
-    answer_lines.append(f"  🧠 {BOLD}Detected Condition:{RESET} {GREEN}{response.get('detected_disease')}{RESET}")
-    # Confidence interpret
+    
+    # Show diagnosis source if available (Advanced vs Basic)
+    diagnosis_source = response.get('diagnosis_source', '')
+    source_label = ""
+    if diagnosis_source == 'advanced':
+        source_label = f" {BLUE}(Advanced Diagnosis){RESET}"
+    elif diagnosis_source == 'basic':
+        source_label = f" {YELLOW}(Basic Diagnosis){RESET}"
+    
+    answer_lines.append(f"  🧠 {BOLD}Detected Condition:{RESET} {GREEN}{response.get('detected_disease')}{RESET}{source_label}")
+    
+    # Confidence interpret with better messaging
     conf = float(response.get('confidence', 0.0))
     conf_pct = conf * 100.0
     conf_word = "Low"
+    conf_color = YELLOW
+    
     if conf_pct >= 80:
         conf_word = "High"
+        conf_color = GREEN
     elif conf_pct >= 60:
         conf_word = "Moderate"
-    answer_lines.append(f"     {BOLD}Confidence Level:{RESET} {YELLOW}{conf_pct:.1f}% ({conf_word}){RESET}")
-    if response.get("disease_symptom"):
-        answer_lines.append(f"     {BOLD}Typical Symptom:{RESET} {response.get('disease_symptom')}")
+        conf_color = YELLOW
+    else:
+        conf_word = "Low"
+        conf_color = RED
+    
+    answer_lines.append(f"     {BOLD}Confidence Level:{RESET} {conf_color}{conf_pct:.1f}% ({conf_word}){RESET}")
+    
+    # Low confidence warning
+    if conf_pct < 40:
+        answer_lines.append(f"     {RED}{BOLD}⚠️  LOW CONFIDENCE WARNING:{RESET}")
+        answer_lines.append(f"     {RED}Symptoms are vague or ambiguous. Recommendations are limited.{RESET}")
+        answer_lines.append(f"     {RED}Please provide more specific symptoms or consult a doctor.{RESET}")
+    elif conf_pct < 60:
+        answer_lines.append(f"     {YELLOW}ℹ️  Moderate confidence - consider providing more details for better results.{RESET}")
+    
+    # Disease-specific typical symptoms (medical accuracy)
+    detected_disease = response.get('detected_disease', '').lower()
+    disease_symptoms_map = {
+        'dengue': 'High fever (104°F+), severe headache, joint/muscle pain, eye pain, rash',
+        'malaria': 'Intermittent fever, chills, sweating, headache, nausea, vomiting',
+        'typhoid': 'Sustained fever, weakness, abdominal pain, headache, loss of appetite',
+        'migraine': 'Severe throbbing headache (one side), nausea, light/sound sensitivity',
+        'influenza': 'High fever, body aches, fatigue, dry cough, sore throat',
+        'pneumonia': 'Cough with phlegm, fever, chest pain, difficulty breathing',
+        'covid-19': 'Fever, dry cough, fatigue, loss of taste/smell, breathing difficulty',
+        'diabetes': 'Increased thirst, frequent urination, fatigue, blurred vision, slow healing'
+    }
+    
+    # Try to find matching disease-specific symptoms
+    typical_symptoms = None
+    for disease_key, symptoms in disease_symptoms_map.items():
+        if disease_key in detected_disease:
+            typical_symptoms = symptoms
+            break
+    
+    # Fallback to generic symptom if available
+    if not typical_symptoms and response.get("disease_symptom"):
+        typical_symptoms = response.get('disease_symptom')
+    
+    if typical_symptoms:
+        answer_lines.append(f"     {BOLD}Typical Symptoms:{RESET} {typical_symptoms}")
     answer_lines.append("")
 
     # Condition description
@@ -1356,6 +1760,13 @@ def format_answer_for_display(response: Dict) -> str:
     herbal_recs = response.get("herbal_recommendations", [])
     if herbal_recs:
         answer_lines.append(f"{GREEN}{BOLD}🌿 HERBAL INGREDIENTS ({len(herbal_recs)}){RESET}")
+        
+        # Show message if recommendations were limited due to low confidence
+        conf = float(response.get('confidence', 0.0))
+        if conf < 0.40:
+            answer_lines.append(f"{GREEN}" + "━" * 78 + f"{RESET}")
+            answer_lines.append(f"  {YELLOW}ℹ️  Limited recommendations due to low confidence{RESET}")
+        
         answer_lines.append(f"{GREEN}" + "━" * 78 + f"{RESET}")
         for i, rec in enumerate(herbal_recs, 1):
             score = float(rec.get('relevance_score', 0.0))
@@ -1363,6 +1774,15 @@ def format_answer_for_display(response: Dict) -> str:
             bar = "█" * bar_len + "░" * (30 - bar_len)
             answer_lines.append(f"  {BOLD}{i}. {rec.get('ingredient').upper()}{RESET}")
             answer_lines.append(f"     Relevance: {GREEN}{bar}{RESET} {score:.1%}")
+            
+            # Show effectiveness rating if available from datasets
+            if rec.get('effectiveness_rating'):
+                eff = rec['effectiveness_rating']
+                evidence = rec.get('evidence_level', 'Unknown')
+                eff_bar_len = max(0, min(30, int(round(eff * 30))))
+                eff_bar = "█" * eff_bar_len + "░" * (30 - eff_bar_len)
+                answer_lines.append(f"     Clinical:  {BLUE}{eff_bar}{RESET} {eff:.1%} ({evidence} evidence)")
+            
             answer_lines.append(f"     Benefits:  {rec.get('benefits')}")
             if rec.get("active_compounds"):
                 answer_lines.append(f"     Compounds: {rec.get('active_compounds')}")
@@ -1373,16 +1793,60 @@ def format_answer_for_display(response: Dict) -> str:
     drug_recs = response.get("drug_recommendations", [])
     if drug_recs:
         answer_lines.append(f"{YELLOW}{BOLD}💊 PHARMACEUTICAL MEDICATIONS ({len(drug_recs)}){RESET}")
+        
+        # Show message if recommendations were limited due to low confidence
+        conf = float(response.get('confidence', 0.0))
+        if conf < 0.40:
+            answer_lines.append(f"{YELLOW}" + "━" * 78 + f"{RESET}")
+            answer_lines.append(f"  {YELLOW}ℹ️  Limited recommendations due to low confidence{RESET}")
+        
+        # Dengue-specific NSAID warning (CRITICAL SAFETY)
+        detected_disease = response.get('detected_disease', '').lower()
+        if 'dengue' in detected_disease:
+            answer_lines.append(f"{RED}{BOLD}" + "━" * 78 + f"{RESET}")
+            answer_lines.append(f"  {RED}{BOLD}⚠️  DENGUE SAFETY WARNING:{RESET}")
+            answer_lines.append(f"  {RED}• Avoid Aspirin and NSAIDs (Ibuprofen, Diclofenac) - bleeding risk{RESET}")
+            answer_lines.append(f"  {RED}• Use Paracetamol ONLY under medical supervision{RESET}")
+            answer_lines.append(f"  {RED}• Seek immediate medical care for proper diagnosis and monitoring{RESET}")
+            answer_lines.append(f"{RED}{BOLD}" + "━" * 78 + f"{RESET}")
+        
         answer_lines.append(f"{YELLOW}" + "━" * 78 + f"{RESET}")
         for i, drug in enumerate(drug_recs, 1):
+            drug_name = drug.get('name', '').upper()
+            
+            # Backup safety check: Mark NSAIDs with ❌ if somehow present for dengue
+            nsaid_names = ['aspirin', 'ibuprofen', 'diclofenac', 'naproxen', 'indomethacin', 'ketorolac', 'mefenamic']
+            is_nsaid = any(nsaid in drug_name.lower() for nsaid in nsaid_names)
+            is_dengue = 'dengue' in detected_disease.lower() or 'hemorrhagic' in detected_disease.lower()
+            
+            if is_nsaid and is_dengue:
+                # Show NSAID with explicit contraindication marker
+                answer_lines.append(f"  {BOLD}{i}. {drug_name} {RED}❌ NOT RECOMMENDED FOR DENGUE{RESET}")
+            else:
+                # Display drug normally (NSAIDs already filtered for Dengue)
+                answer_lines.append(f"  {BOLD}{i}. {drug_name}{RESET}")
+            
             avail = drug.get('availability', 'Unknown')
             avail_icon = availability_local.get(avail, '🟡')
-            answer_lines.append(f"  {BOLD}{i}. {drug.get('name').upper()}{RESET}")
+            
+            # Show safety warning if present
+            safety_warning = drug.get('safety_warning')
+            if safety_warning:
+                answer_lines.append(f"     {RED}{BOLD}{safety_warning}{RESET}")
+            
             brand_names = ", ".join(drug.get('brand_names', [])) if drug.get('brand_names') else "—"
             answer_lines.append(f"     {BOLD}Brand Names:{RESET}  {brand_names}")
             answer_lines.append(f"     {BOLD}Type:{RESET}         {drug.get('type', '—')}")
             answer_lines.append(f"     {BOLD}Dosage:{RESET}       {drug.get('dosage', '—')}")
             answer_lines.append(f"     {BOLD}Purpose:{RESET}      {drug.get('purpose', '—')}")
+            
+            # Show user ratings if available from dataset integration
+            if drug.get('user_rating'):
+                rating_stars = "⭐" * int(round(drug['user_rating']))
+                answer_lines.append(f"     {BOLD}User Rating:{RESET}  {rating_stars} {drug['user_rating']:.1f}/5 ({drug.get('review_count', 0)} reviews)")
+            if drug.get('user_effectiveness'):
+                answer_lines.append(f"     {BOLD}User Reports:{RESET} {drug['user_effectiveness']} find it effective")
+            
             answer_lines.append(f"     {BOLD}Availability:{RESET} {avail_icon} {avail}")
             answer_lines.append(f"     {BOLD}Price Range:{RESET}  {YELLOW}{drug.get('price_range', '—')}{RESET}")
             answer_lines.append(f"     {BOLD}Side Effects:{RESET} {RED}{drug.get('side_effects', '—')}{RESET}")
@@ -1400,9 +1864,51 @@ def format_answer_for_display(response: Dict) -> str:
         answer_lines.append("  ✗ Quality varies by brand             ✗ May require prescription")
         answer_lines.append("")
         answer_lines.append(f"  {BOLD}{BLUE}💡 SMART RECOMMENDATION:{RESET}")
-        answer_lines.append("     • Acute Conditions: Start with pharmaceutical options")
-        answer_lines.append("     • Chronic Prevention: Consider herbal remedies")
-        answer_lines.append("     • Optimal Approach: Combination therapy (consult doctor)")
+        
+        # Disease-specific recommendations (medically accurate guidance)
+        detected_disease = response.get('detected_disease', '').lower()
+        
+        if 'dengue' in detected_disease or 'hemorrhagic' in detected_disease:
+            answer_lines.append(f"     • {RED}{BOLD}Suspected Dengue:{RESET} Use Paracetamol ONLY, avoid all NSAIDs")
+            answer_lines.append("     • Seek immediate medical care for proper diagnosis")
+            answer_lines.append("     • Monitor for warning signs: bleeding, severe abdominal pain")
+        
+        elif 'covid' in detected_disease or 'coronavirus' in detected_disease:
+            answer_lines.append(f"     • {BLUE}{BOLD}Suspected COVID-19:{RESET} Isolate immediately, get tested")
+            answer_lines.append("     • Use Paracetamol for fever, monitor oxygen levels if possible")
+            answer_lines.append("     • Seek care if breathing difficulty or persistent symptoms")
+        
+        elif 'malaria' in detected_disease:
+            answer_lines.append(f"     • {RED}{BOLD}Suspected Malaria:{RESET} Requires immediate medical diagnosis (blood test)")
+            answer_lines.append("     • Prescription antimalarial drugs are essential - do not self-medicate")
+            answer_lines.append("     • Herbal remedies cannot cure malaria, only support symptom management")
+        
+        elif 'diabetes' in detected_disease or 'hyperglycemia' in detected_disease:
+            answer_lines.append(f"     • {YELLOW}{BOLD}Diabetes Management:{RESET} Requires medical evaluation and blood glucose monitoring")
+            answer_lines.append("     • Lifestyle changes (diet, exercise) are critical along with medication")
+            answer_lines.append("     • Herbal support should complement, not replace, prescribed treatments")
+        
+        elif 'hypertension' in detected_disease or 'high blood pressure' in detected_disease:
+            answer_lines.append(f"     • {YELLOW}{BOLD}Blood Pressure Management:{RESET} Medical evaluation needed")
+            answer_lines.append("     • Lifestyle modifications essential: low sodium diet, regular exercise")
+            answer_lines.append("     • Prescription medications may be required for control")
+        
+        elif 'asthma' in detected_disease:
+            answer_lines.append(f"     • {BLUE}{BOLD}Asthma Management:{RESET} Keep rescue inhaler accessible at all times")
+            answer_lines.append("     • Identify and avoid triggers (allergens, smoke, cold air)")
+            answer_lines.append("     • Controller medications required for persistent asthma")
+        
+        elif 'typhoid' in detected_disease or 'bacterial infection' in detected_disease:
+            answer_lines.append("     • Suspected Bacterial Infection: Requires medical diagnosis and antibiotics")
+            answer_lines.append("     • Herbal support may complement medical treatment")
+            answer_lines.append("     • Do not delay professional medical care")
+        
+        else:
+            # Generic recommendations for mild/common conditions
+            answer_lines.append("     • Acute Conditions: Start with pharmaceutical options")
+            answer_lines.append("     • Chronic Prevention: Consider herbal remedies")
+            answer_lines.append("     • Optimal Approach: Combination therapy (consult doctor)")
+        
         answer_lines.append("")
 
     # AI insights
@@ -1467,20 +1973,25 @@ def generate_comprehensive_answer(
         except Exception:
             disease, confidence = ("General Symptom", 0.5)
 
-    # Step 2: Get herbal recommendations
+    # Step 2: Get herbal recommendations (limit for low confidence)
     # If enhanced predictor has herbal_remedies, use those; otherwise get from knowledge base
+    max_herbs = 5 if confidence >= 0.40 else 3  # Reduce recommendations for low confidence
+    
     if enhanced_result and enhanced_result.get('herbal_remedies'):
         # Use herbal remedies from menstrual/specialized pattern detection
         enhanced_herbal = enhanced_result.get('herbal_remedies', [])
-        herbal_recommendations = [(r['name'], 0.85) for r in enhanced_herbal]
+        herbal_recommendations = [(r['name'], 0.85) for r in enhanced_herbal[:max_herbs]]
     else:
         # Fall back to knowledge base lookup
         herbal_recommendations = suggest_ingredients_for_disease(disease, knowledge=knowledge)
+        herbal_recommendations = herbal_recommendations[:max_herbs]
 
-    # Step 3: Get pharma recommendations if enabled
+    # Step 3: Get pharma recommendations if enabled (limit for low confidence)
     drug_recommendations = []
     drug_interactions = []
     allergy_warnings = []
+    
+    max_drugs = 5 if confidence >= 0.40 else 3  # Reduce recommendations for low confidence
 
     if include_drugs:
         # If enhanced predictor has pharma_options, use those; otherwise get from knowledge base
@@ -1503,7 +2014,39 @@ def generate_comprehensive_answer(
             ]
         else:
             # Fall back to knowledge base lookup
-            drug_recommendations = suggest_drugs_for_disease(disease, top_n=5)
+            drug_recommendations = suggest_drugs_for_disease(disease, top_n=max_drugs)
+        
+        # Add safety warnings to drugs
+        for drug in drug_recommendations:
+            drug_name = drug.get('name', '')
+            if drug_name in DRUG_SAFETY_WARNINGS:
+                drug['safety_warning'] = DRUG_SAFETY_WARNINGS[drug_name]
+            else:
+                drug['safety_warning'] = None
+            
+            # Enhance with user review data from integrator if available
+            if HAS_INTEGRATOR:
+                try:
+                    integrator = get_integrator()
+                    review_data = integrator.get_drug_effectiveness(drug_name, disease)
+                    if review_data:
+                        drug['user_rating'] = review_data['average_rating']
+                        drug['user_effectiveness'] = f"{review_data['average_effectiveness']:.0%}"
+                        drug['review_count'] = review_data['review_count']
+                except Exception:
+                    pass
+        
+        # Limit drug list for low confidence
+        drug_recommendations = drug_recommendations[:max_drugs]
+        
+        # CRITICAL: Filter out NSAIDs completely for Dengue (don't show them at all)
+        disease_lower = disease.lower()
+        if 'dengue' in disease_lower or 'hemorrhagic' in disease_lower:
+            nsaid_list = ['aspirin', 'ibuprofen', 'diclofenac', 'naproxen', 'ketoprofen', 'indomethacin']
+            drug_recommendations = [
+                drug for drug in drug_recommendations 
+                if not any(nsaid in drug.get('name', '').lower() for nsaid in nsaid_list)
+            ]
         
         drug_names = [d.get('name', '') for d in drug_recommendations]
         interactions_db = load_drug_interactions()
@@ -1524,17 +2067,43 @@ def generate_comprehensive_answer(
         "emergency_signs": enhanced_result.get('emergency_signs', []) if enhanced_result else []
     }
 
-    # Enrich herbal recs
+    # Enrich herbal recs with compound-to-herb mapping
     herbs_df = knowledge.get("herbs", SAMPLE_HERBS)
     for ingredient, score in herbal_recommendations:
         herb_info = get_herb_info(ingredient, herbs_df)
-        response["herbal_recommendations"].append({
-            "ingredient": ingredient,
+        
+        # Map chemical compound to parent herb if needed
+        ingredient_lower = ingredient.lower()
+        parent_herb = COMPOUND_TO_HERB.get(ingredient_lower, None)
+        
+        if parent_herb:
+            # This is a compound, show parent herb
+            display_name = f"{parent_herb} ({ingredient})"
+        else:
+            # This is already a herb name
+            display_name = ingredient
+        
+        herb_rec = {
+            "ingredient": display_name,
+            "original_name": ingredient,
             "relevance_score": float(score),
             "benefits": herb_info.get("benefits", "Traditional herbal remedy") if isinstance(herb_info, dict) else "Traditional herbal remedy",
             "active_compounds": herb_info.get("active_compounds", "") if isinstance(herb_info, dict) else "",
             "usage": herb_info.get("usage", "Consult herbalist for dosage") if isinstance(herb_info, dict) else "Consult herbalist for dosage"
-        })
+        }
+        
+        # Enhance with dataset integrator if available
+        if HAS_INTEGRATOR:
+            try:
+                integrator = get_integrator()
+                effectiveness = integrator.get_herb_effectiveness(ingredient)
+                if effectiveness:
+                    herb_rec['effectiveness_rating'] = effectiveness
+                    herb_rec['evidence_level'] = 'High' if effectiveness > 0.8 else 'Moderate' if effectiveness > 0.6 else 'Low'
+            except Exception:
+                pass
+        
+        response["herbal_recommendations"].append(herb_rec)
 
     # Disease context from knowledge base (if available)
     disease_info = None
@@ -1563,9 +2132,16 @@ def generate_comprehensive_answer(
             except (AttributeError, TypeError):
                 response["disease_symptom"] = ""
 
-    # AI insights
+    # AI insights - use disease-specific templates based on detected_disease
     if use_ai:
-        response["ai_insights"] = generate_ai_insights(user_input, disease, herbal_recommendations, drug_recommendations, knowledge)
+        detected_disease = response["detected_disease"]
+        response["ai_insights"] = generate_ai_insights(
+            user_input, 
+            detected_disease,  # Pass the actual detected disease name
+            herbal_recommendations, 
+            drug_recommendations, 
+            knowledge
+        )
 
     return response
 

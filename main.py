@@ -8,7 +8,13 @@ import json
 import sys
 import os
 import time
+import logging
 from typing import Optional
+
+# Suppress INFO logging from all modules
+logging.basicConfig(level=logging.WARNING)
+logging.getLogger('gensim').setLevel(logging.WARNING)
+logging.getLogger('src').setLevel(logging.WARNING)
 
 # Try importing the AI assistant module with graceful error handling
 try:
@@ -149,12 +155,26 @@ def analyze_with_advanced_features(symptoms: str, knowledge: dict, patient: Opti
             include_drugs=True
         )
         
-        primary_disease = response.get('disease', 'Unknown')
-        primary_confidence = response.get('confidence', 0.5)
+        basic_disease = response.get('detected_disease', 'Unknown')
+        basic_confidence = response.get('confidence', 0.5)
         
-        # Step 2: Multi-disease detection
+        # Step 2: Multi-disease detection (ADVANCED - More Accurate)
         detector = MultiDiseaseDetector()
         disease_analysis = detector.analyze_symptom_overlap(symptoms)
+        
+        # Override basic diagnosis if advanced has higher confidence
+        if disease_analysis['primary_disease'] and disease_analysis['primary_disease']['confidence'] > basic_confidence:
+            primary_disease = disease_analysis['primary_disease']['disease']
+            primary_confidence = disease_analysis['primary_disease']['confidence']
+            print(f"\n🔄 Using advanced diagnosis (higher confidence): {primary_disease}")
+            # Replace basic diagnosis entirely in response
+            response['detected_disease'] = primary_disease
+            response['confidence'] = primary_confidence
+            response['diagnosis_source'] = 'advanced'
+        else:
+            primary_disease = basic_disease
+            primary_confidence = basic_confidence
+            response['diagnosis_source'] = 'basic'
         
         # Step 3: Severity assessment
         severity_classifier = SeverityClassifier()

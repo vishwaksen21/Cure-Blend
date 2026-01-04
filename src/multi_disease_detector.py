@@ -84,7 +84,25 @@ class MultiDiseaseDetector:
         Returns:
             Dict with primary disease, possible comorbidities, and flags
         """
+        # Chronic diseases that CANNOT be inferred from acute symptoms alone
+        CHRONIC_DISEASES_EXCLUDE = {
+            'Hypertension', 'Diabetes', 'Chronic Kidney Disease', 
+            'Heart Disease', 'Arthritis', 'COPD', 'Asthma'
+        }
+        
         predictions = self.predict_multiple(symptoms, top_n=5, min_confidence=0.10)
+        
+        # Filter out chronic diseases unless confidence is very high (>60%)
+        filtered_predictions = []
+        for pred in predictions:
+            disease = pred['disease']
+            conf = pred['confidence']
+            # Only include chronic diseases if confidence > 60%
+            if disease in CHRONIC_DISEASES_EXCLUDE and conf < 0.60:
+                continue
+            filtered_predictions.append(pred)
+        
+        predictions = filtered_predictions
         
         if not predictions:
             return {
@@ -195,10 +213,10 @@ def format_multi_disease_output(result: Dict) -> str:
         output.append(f"   (Large gap suggests single condition)")
     
     # All predictions
-    output.append(f"\n📋 ALL PREDICTIONS (Top {len(result['all_predictions'])}):")
-    for pred in result['all_predictions']:
+    output.append(f"\n📋 ALL PREDICTIONS (Top {len(result['all_predictions'])})")
+    for i, pred in enumerate(result['all_predictions'], 1):
         conf_bar = "█" * int(pred['confidence'] * 30)
-        output.append(f"   {pred['rank']}. {pred['disease']:<30} {conf_bar} {pred['confidence']*100:.1f}%")
+        output.append(f"   {i}. {pred['disease']:<30} {conf_bar} {pred['confidence']*100:.1f}%")
     
     return "\n".join(output)
 
