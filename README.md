@@ -5,6 +5,14 @@
 
 ---
 
+## ⚖️ Copyright & Legal
+
+**Copyright (c) 2026 vishwaksen21. All Rights Reserved.**
+
+This software is proprietary and confidential. Unauthorized copying, modification, distribution, or use of this software is strictly prohibited without explicit written permission from the copyright holder. See [COPYRIGHT](COPYRIGHT) file for full details.
+
+---
+
 ## 🌟 Key Features
 
 🎯 **Smart Disease Detection** — ML model trained on 4,300+ medical cases  
@@ -145,6 +153,13 @@ Contributions welcome! Areas to improve:
 
 **CureBlend Team**  
 Repository: [github.com/vishwaksen21/Cure-Blend](https://github.com/vishwaksen21/Cure-Blend)
+
+---
+
+## 📄 License
+
+Copyright (c) 2026 vishwaksen21. All Rights Reserved.  
+This project is proprietary software. No license is granted for use, copying, modification, or distribution.
 
 ---
 
