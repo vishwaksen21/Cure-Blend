@@ -7,9 +7,10 @@
 
 ## ⚖️ License
 
-**MIT License** — Copyright (c) 2026 vishwaksen21
+**Proprietary License** — Copyright (c) 2026 vishwaksen21  
+**All Rights Reserved**
 
-This project is open-source and free to use, modify, and distribute. See [LICENSE](LICENSE) file for full details.
+This project is proprietary software. No permission is granted to use, copy, modify, or distribute this software. See [LICENSE](LICENSE) file for full details.
 
 ---
 
