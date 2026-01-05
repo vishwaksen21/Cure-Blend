@@ -72,6 +72,9 @@ htmlcov/
 .openai_key
 .azure_key
 credentials.json
+.streamlit/secrets.toml
+*.pem
+*.key
 
 # Cached data
 *.cache
