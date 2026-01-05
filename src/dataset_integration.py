@@ -192,10 +192,10 @@ class DatasetIntegrator:
         if self.drug_reviews is None:
             return None
         
-        # Case-insensitive search
+        # Case-insensitive search (regex=False to treat as literal string)
         drug_lower = drug_name.lower()
         matches = self.drug_reviews[
-            self.drug_reviews['drug_name'].str.lower().str.contains(drug_lower, na=False)
+            self.drug_reviews['drug_name'].str.lower().str.contains(drug_lower, na=False, regex=False)
         ]
         
         if matches.empty:
