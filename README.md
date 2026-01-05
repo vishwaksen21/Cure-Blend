@@ -5,11 +5,11 @@
 
 ---
 
-## ⚖️ Copyright & Legal
+## ⚖️ License
 
-**Copyright (c) 2026 vishwaksen21. All Rights Reserved.**
+**MIT License** — Copyright (c) 2026 vishwaksen21
 
-This software is proprietary and confidential. Unauthorized copying, modification, distribution, or use of this software is strictly prohibited without explicit written permission from the copyright holder. See [COPYRIGHT](COPYRIGHT) file for full details.
+This project is open-source and free to use, modify, and distribute. See [LICENSE](LICENSE) file for full details.
 
 ---
 

@@ -2,6 +2,9 @@
 """
 Dual Recommendation Health Assistant - CLI Interface
 Combines herbal remedies and pharmaceutical recommendations with optional AI insights.
+
+Copyright (c) 2026 vishwaksen21
+Licensed under the MIT License - see LICENSE file for details
 """
 
 import json

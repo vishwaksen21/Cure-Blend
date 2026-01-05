@@ -2,6 +2,9 @@
 Cure-Blend: AI-Powered Health Recommendation System
 Streamlit Web Application with Advanced Features
 
+Copyright (c) 2026 vishwaksen21
+Licensed under the MIT License - see LICENSE file for details
+
 Features:
 - Multi-disease detection with comorbidity analysis
 - Severity classification (0-100 scoring)
