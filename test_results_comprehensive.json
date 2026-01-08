@@ -1,0 +1,312 @@
+[
+  {
+    "test_num": 1,
+    "description": "Complex dengue presentation",
+    "symptoms": "I've been having high fever for 3 days, severe body aches, joint pain especially in knees, headache behind my eyes, and noticed small red spots on my skin",
+    "detected": "Dengue / Viral Fever",
+    "confidence": 95.0,
+    "expected": "Dengue",
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 2,
+    "description": "Complex COVID presentation",
+    "symptoms": "My symptoms started 5 days ago with dry cough, then lost my sense of smell completely, can't taste anything, feeling very tired, mild fever comes and goes",
+    "detected": "COVID-19",
+    "confidence": 39.0,
+    "expected": "COVID-19",
+    "status": "WARNING",
+    "issue": "Correct disease but confidence too low (39.0% < 50%)"
+  },
+  {
+    "test_num": 3,
+    "description": "Classic diabetes triad with additional symptoms",
+    "symptoms": "For the past 2 weeks I'm constantly thirsty, drinking lots of water but still thirsty, going to bathroom every hour especially at night, vision is blurry, feeling weak and tired",
+    "detected": "Diabetes",
+    "confidence": 95.0,
+    "expected": "Diabetes",
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 4,
+    "description": "Cyclic fever pattern",
+    "symptoms": "I get sudden episodes of fever that come and go every 2-3 days, chills so bad I'm shivering, then I start sweating heavily, headache and body pain",
+    "detected": "Malaria",
+    "confidence": 95.0,
+    "expected": "Malaria",
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 5,
+    "description": "Could be flu, COVID, or other viral - should NOT be highly confident",
+    "symptoms": "fever, cough, body ache, fatigue",
+    "detected": "Influenza / Viral Fever",
+    "confidence": 39.0,
+    "expected": null,
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 6,
+    "description": "Could be cardiac, anxiety, or respiratory - should warn to seek care",
+    "symptoms": "chest pain, shortness of breath, dizziness",
+    "detected": "Hypertension / Cardiac Stress",
+    "confidence": 39.0,
+    "expected": null,
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 7,
+    "description": "Generic GI symptoms - low confidence expected",
+    "symptoms": "stomach pain, nausea, loss of appetite",
+    "detected": "Typhoid Fever",
+    "confidence": 35.0,
+    "expected": null,
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 8,
+    "description": "Very generic - should be low confidence",
+    "symptoms": "headache, dizziness, fatigue",
+    "detected": "Headache",
+    "confidence": 30.0,
+    "expected": null,
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 9,
+    "description": "Anosmia is highly specific for COVID",
+    "symptoms": "I can't smell anything at all",
+    "detected": "COVID-19",
+    "confidence": 95.0,
+    "expected": "COVID-19",
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 10,
+    "description": "Single bleeding symptom without fever - should be cautious",
+    "symptoms": "bleeding from my gums",
+    "detected": "General Condition",
+    "confidence": 50.0,
+    "expected": null,
+    "status": "WARNING",
+    "issue": "Confidence too high for ambiguous symptoms (50.0%)"
+  },
+  {
+    "test_num": 11,
+    "description": "Cyclic fever pattern suggests malaria",
+    "symptoms": "intermittent fever that comes every other day",
+    "detected": "Malaria",
+    "confidence": 41.99999999999999,
+    "expected": "Malaria",
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 12,
+    "description": "Very vague - should be very low confidence",
+    "symptoms": "not feeling well for a few days, kind of tired and weak",
+    "detected": "Anxiety Disorder / Fatigue Syndrome",
+    "confidence": 25.0,
+    "expected": null,
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 13,
+    "description": "User mentions dengue + multiple symptoms",
+    "symptoms": "I think I might have dengue because I have fever and my joints hurt a lot and I saw some bleeding",
+    "detected": "Dengue / Viral Fever",
+    "confidence": 95.0,
+    "expected": "Dengue",
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 14,
+    "description": "Context clues about diabetes",
+    "symptoms": "Doctor said to monitor my blood sugar because I'm peeing a lot and always thirsty",
+    "detected": "Diabetes",
+    "confidence": 95.0,
+    "expected": "Diabetes",
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 15,
+    "description": "User self-identifies condition",
+    "symptoms": "My asthma is acting up, wheezing and can't breathe properly",
+    "detected": "Asthma / Bronchitis",
+    "confidence": 60.0,
+    "expected": "Asthma",
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 16,
+    "description": "Could be typhoid, gastroenteritis, or food poisoning",
+    "symptoms": "high fever, vomiting, diarrhea, abdominal pain, weakness",
+    "detected": "Typhoid Fever",
+    "confidence": 95.0,
+    "expected": "Typhoid",
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 17,
+    "description": "Could be pneumonia, COVID, or other respiratory - multiple possibilities",
+    "symptoms": "fever, cough, difficulty breathing, chest pain",
+    "detected": "Hypertension / Cardiac Stress",
+    "confidence": 39.0,
+    "expected": null,
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 18,
+    "description": "Could be arthritis, fibromyalgia, or other - low specificity",
+    "symptoms": "joint pain, muscle pain, fatigue, no fever",
+    "detected": "Influenza / Viral Fever",
+    "confidence": 34.0,
+    "expected": null,
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 19,
+    "description": "Mild symptom - low confidence",
+    "symptoms": "mild headache",
+    "detected": "Headache",
+    "confidence": 35.0,
+    "expected": "Headache",
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 20,
+    "description": "Emergency symptoms - should flag for immediate care",
+    "symptoms": "severe crushing chest pain, sweating, left arm pain",
+    "detected": "Hypertension / Cardiac Stress",
+    "confidence": 30.0,
+    "expected": null,
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 21,
+    "description": "Severe dengue presentation",
+    "symptoms": "extremely high fever 104F, severe joint pain, bleeding from nose and gums",
+    "detected": "Dengue / Viral Fever",
+    "confidence": 95.0,
+    "expected": "Dengue",
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 22,
+    "description": "Chronic condition with symptoms",
+    "symptoms": "I've had high blood pressure for years, now getting headaches and dizziness",
+    "detected": "Hypertension / Cardiac Stress",
+    "confidence": 95.0,
+    "expected": "Hypertension",
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 23,
+    "description": "Emergency headache - should recommend immediate care",
+    "symptoms": "sudden onset of severe headache, worst headache of my life",
+    "detected": "Headache",
+    "confidence": 20.0,
+    "expected": null,
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 24,
+    "description": "Acute UTI presentation",
+    "symptoms": "pain when urinating for 2 days, lower back pain, cloudy urine",
+    "detected": "Urinary Tract Infection (UTI)",
+    "confidence": 95.0,
+    "expected": "UTI",
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 25,
+    "description": "Could be measles, viral infection, or other - multiple possibilities",
+    "symptoms": "my child has fever, rash, runny nose, cough",
+    "detected": "Common Cold / Influenza",
+    "confidence": 34.0,
+    "expected": null,
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 26,
+    "description": "Suggests ear infection but not in our disease list",
+    "symptoms": "baby is crying a lot, pulling at ear, fever",
+    "detected": "Influenza / Viral Fever",
+    "confidence": 15.0,
+    "expected": null,
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 27,
+    "description": "Negative symptoms - limits differential",
+    "symptoms": "fever but no cough, no cold symptoms",
+    "detected": "Influenza / Viral Fever",
+    "confidence": 24.0,
+    "expected": null,
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 28,
+    "description": "Excludes dengue hemorrhagic features",
+    "symptoms": "high fever without any rash or bleeding",
+    "detected": "Dengue / Viral Fever",
+    "confidence": 28.999999999999996,
+    "expected": null,
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 29,
+    "description": "Subjective fever with anosmia",
+    "symptoms": "I feel feverish but thermometer shows normal temperature, body aches, can't taste food properly",
+    "detected": "COVID-19",
+    "confidence": 95.0,
+    "expected": "COVID-19",
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 30,
+    "description": "Atypical presentation - no fever complicates diagnosis",
+    "symptoms": "no fever but severe joint pain in multiple joints, rash on arms and legs",
+    "detected": "Dengue / Viral Fever",
+    "confidence": 28.499999999999996,
+    "expected": null,
+    "status": "PASS",
+    "issue": null
+  },
+  {
+    "test_num": 31,
+    "description": "Recurrent dengue - relevant history",
+    "symptoms": "I had dengue 2 months ago, now again having fever and body pain",
+    "detected": "Dengue / Viral Fever",
+    "confidence": 40.0,
+    "expected": "Dengue",
+    "status": "PASS",
+    "issue": null
+  }
+]
