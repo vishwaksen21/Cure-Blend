@@ -33,7 +33,7 @@ jobs:
     
     - name: Run automated tests
       run: |
-        python test_core_functions.py
+        python test_system.py
     
     - name: Check for syntax errors
       run: |
