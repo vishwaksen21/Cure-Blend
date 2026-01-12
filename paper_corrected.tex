@@ -11,17 +11,33 @@
 \title{Cure-Blend AI: An Explainable Dual-Mode Health Recommendation System with Herbal and Pharmaceutical Guidance}
 
 \author{
-\IEEEauthorblockN{Mrs. Roma Kudale}
+\IEEEauthorblockN{Roma Kudale}
 \IEEEauthorblockA{
-FPC, Dept. of AI \& DS \\
-CMR Institute of Technology, Bengaluru \\
-Email: roma.k@cmrit.ac.in}
+Dept. of AI \& Data Science\\
+CMR Institute of Technology\\
+Bengaluru, India\\
+roma.k@cmrit.ac.in}
 \and
-\IEEEauthorblockN{C. Vishwak Sena}
+\IEEEauthorblockN{Araddhana Deshmukh}
 \IEEEauthorblockA{
-Dept. of CS-DS \\
-CMR Institute of Technology, Bengaluru \\
-Email: chilukurvishwak21@gmail.com}
+School of Computer Science \& IT\\
+Symbiosis Skills \& Professional University\\
+Pune, India\\
+dir\_csit@sspu.ac.in}
+\\[1.2em]
+\IEEEauthorblockN{Ananya U}
+\IEEEauthorblockA{
+Dept. of Computer Science \& Data Science\\
+CMR Institute of Technology\\
+Bengaluru, India\\
+anu23csds@cmrit.ac.in}
+\and
+\IEEEauthorblockN{C Vishwak Sena}
+\IEEEauthorblockA{
+Dept. of Computer Science \& Data Science\\
+CMR Institute of Technology\\
+Bengaluru, India\\
+cvi23csds@cmrit.ac.in}
 }
 
 \begin{document}
@@ -38,34 +54,34 @@ Explainable AI, Disease Prediction, Herbal Medicine, Pharmaceutical Recommendati
 
 % ---------------------------------------------------
 \section{Introduction}
-The rise of symptom checker applications has changed how people seek preliminary health information \cite{mimic, ekins2019}. However, we noticed two recurring problems during our research: first, these systems rarely explain \textit{why} they suggest a particular diagnosis, leaving users to blindly trust black-box predictions. Second, they typically ignore herbal and traditional remedies, despite evidence that many patients, especially in India and Asia, use both modern and traditional treatments simultaneously.
+The rise of symptom checker applications has changed how people seek preliminary health information \cite{1}. However, we noticed two recurring problems during our research: first, these systems rarely explain \textit{why} they suggest a particular diagnosis, leaving users to blindly trust black-box predictions. Second, they typically ignore herbal and traditional remedies, despite evidence that many patients, especially in India and Asia, use both modern and traditional treatments simultaneously.
 
-We developed Cure-Blend AI to address these gaps. Instead of prioritizing maximum predictive accuracy through complex architectures, we focus on interpretability, medical safety, and cultural relevance. The system explains its reasoning, checks for safety concerns, and offers dual recommendations---both pharmaceutical drugs and evidence-based herbal alternatives. To prevent medical inconsistencies, we implement disease-specific AI insight templates for critical conditions, ensuring that AI-generated explanations always match the detected disease and follow evidence-based treatment guidelines. Our goal was to create a tool that respects diverse treatment preferences while maintaining transparency and medical accuracy.
+We developed Cure-Blend AI to address these gaps. Instead of prioritizing maximum predictive accuracy through complex architectures, we focus on interpretability, medical safety, and cultural relevance \cite{2, 3}. The system explains its reasoning, checks for safety concerns, and offers dual recommendations---both pharmaceutical drugs and evidence-based herbal alternatives \cite{4, 5}. To prevent medical inconsistencies, we implement disease-specific AI insight templates for critical conditions, ensuring that AI-generated explanations always match the detected disease and follow evidence-based treatment guidelines \cite{6, 7}. Our goal was to create a tool that respects diverse treatment preferences while maintaining transparency and medical accuracy \cite{4, 5}.
 
 \subsection{Contributions}
 This work makes several contributions to explainable health informatics:
 \begin{itemize}
-    \item We built an interpretable disease predictor using TF-IDF and ensemble methods, achieving 96.9\% accuracy on synthetic data with strong calibration (46.8\% high-confidence predictions above 75\% threshold).
-    \item Through empirical comparison with BioBERT and ClinicalBERT, we demonstrate that Transformer models offer marginal accuracy improvements at significantly higher computational cost---making them less suitable for non-clinical screening tools.
-    \item We integrated a herbal knowledge graph from multiple databases (HITD, IMPPAT, TCM, PubChem, DisGeNET), enabling culturally-aware recommendations based on graph embeddings.
-    \item Our safety module flags emergency symptoms, checks contraindications for eight vulnerable populations, and warns about drug interactions---essential for responsible health informatics.
-    \item The system provides symptom-level explanations showing which features influenced each prediction, addressing the black-box problem in medical AI.
+    \item We built an interpretable disease predictor using TF-IDF and ensemble methods, achieving 96.9\% accuracy on synthetic data with strong calibration (46.8\% high-confidence predictions above 75\% threshold) \cite{8, 9}.
+    \item Through empirical comparison with BioBERT and ClinicalBERT, we demonstrate that Transformer models offer marginal accuracy improvements at significantly higher computational cost---making them less suitable for non-clinical screening tools \cite{10, 11}.
+    \item We integrated a herbal knowledge graph from multiple databases (HITD, IMPPAT, TCM, PubChem, DisGeNET), enabling culturally-aware recommendations based on graph embeddings \cite{12, 13}.
+    \item Our safety module flags emergency symptoms, checks contraindications for eight vulnerable populations, and warns about drug interactions---essential for responsible health informatics \cite{14, 15}.
+    \item The system provides symptom-level explanations showing which features influenced each prediction, addressing the black-box problem in medical AI \cite{16, 3}.
     \item We deployed both web (Streamlit) and CLI interfaces to demonstrate practical usability for diverse user preferences.
 \end{itemize}
 
 % ---------------------------------------------------
 \section{Literature Survey}
 \subsection{AI-Based Disease Prediction}
-Many researchers have used ML models to predict diseases using symptoms or health data \cite{ekins2019, caruana2015}. Simple models such as Logistic Regression and SVM often work well when datasets are small and interpretability is required \cite{joachims1998}. Probability calibration is also important in medical settings \cite{niculescu2005, guo2017}.
+Many researchers have used ML models to predict diseases using symptoms or health data \cite{1, 17}. Simple models such as Logistic Regression and SVM often work well when datasets are small and interpretability is required. Probability calibration is also important in medical settings \cite{8, 9}.
 
 \subsection{Explainable AI in Healthcare}
-Explainable AI (XAI) is needed for trust in healthcare systems \cite{xai_health, han2021, caruana2015}. Popular explanation tools include SHAP \cite{lundberg2017} and LIME \cite{ribeiro2016}. These methods help users understand which features influence a prediction. In medicine, explanations must be simple and meaningful to help users make safe decisions \cite{alizadehsani2024, arrieta2020}.
+Explainable AI (XAI) is needed for trust in healthcare systems \cite{2, 17}. Popular explanation tools include SHAP \cite{16} and LIME \cite{18}. These methods help users understand which features influence a prediction. In medicine, explanations must be simple and meaningful to help users make safe decisions \cite{19, 3}.
 
 \subsection{Knowledge Graphs and Herbal Reasoning}
-Knowledge graphs help link herbs, compounds, proteins, and diseases \cite{kg_survey2019, rajabi2021}. Node2Vec is commonly used to convert graph nodes into vectors so they can be compared using similarity \cite{node2vec}. This is useful for suggesting herbs for a given condition \cite{zhang2024, wang2017}.
+Knowledge graphs help link herbs, compounds, proteins, and diseases \cite{20, 12}. Node2Vec is commonly used to convert graph nodes into vectors so they can be compared using similarity \cite{21}. This is useful for suggesting herbs for a given condition based on therapeutic relationships \cite{13}.
 
 \subsection{Safety and Clinical Decision Support}
-Clinical decision support systems must include rules to check for dangerous symptoms and unsafe treatments \cite{shortliffe1984, osheroff2007}. Tools like Streamlit make it easy to build simple, interactive prototypes \cite{streamlit_blog}.
+Clinical decision support systems must include rules to check for dangerous symptoms and unsafe treatments \cite{6}. These systems are essential for responsible medical informatics.
 
 % ---------------------------------------------------
 \section{Proposed System}
@@ -114,7 +130,7 @@ Given the difficulty of obtaining real patient data due to privacy regulations, 
 \textbf{Generation Process:}
 \begin{itemize}
     \item We manually extracted symptom templates from Mayo Clinic, WebMD, and WHO ICD-10 guidelines, creating base patterns for each disease
-    \item Using UMLS \cite{umls}, we expanded these templates with medical synonyms (e.g., ``chest pain'' $\rightarrow$ ``thoracic discomfort'', ``angina'')
+    \item Using UMLS \cite{22}, we expanded these templates with medical synonyms (e.g., ``chest pain'' $\rightarrow$ ``thoracic discomfort'', ``angina'')
     \item We cross-referenced symptom co-occurrence frequencies with epidemiological literature to avoid unrealistic combinations
     \item To prevent overfitting, we injected 10-15\% random noise---sometimes adding irrelevant symptoms or omitting typical ones
     \item Achieved perfect class balance with 100 samples per disease through template-based augmentation
@@ -193,7 +209,7 @@ We employ an ensemble approach combining multiple classifiers:
 The ensemble uses stacking with cross-validation to combine predictions. A separate Random Forest model is trained for SHAP-based explanations, enabling feature importance visualization.
 
 \subsubsection{Justification for Classical ML}
-We initially experimented with BioBERT and ClinicalBERT \cite{biobert, clinicalbert}, but chose classical ML for several pragmatic reasons:
+We initially experimented with BioBERT and ClinicalBERT \cite{10, 11}, but chose classical ML for several pragmatic reasons:
 
 \textbf{1. Interpretability Was Essential:}
 For a health education tool, users need to understand \textit{why} the system made a prediction. Classical models allow direct feature importance analysis and symptom-level explanations. With BERT, we'd lose this transparency---the embeddings are opaque 768-dimensional vectors.
@@ -215,11 +231,11 @@ Building the herbal knowledge graph required integrating multiple established da
 
 \textbf{Primary Sources:}
 \begin{itemize}
-    \item \textbf{HITD} \cite{ye2011}: Herbs linked to active ingredients and protein targets---served as our foundation
+    \item \textbf{HITD} \cite{23}: Herbs linked to active ingredients and protein targets---served as our foundation
     \item \textbf{TCM Database@Taiwan}: Traditional Chinese Medicine compounds and molecular targets
-    \item \textbf{IMPPAT} \cite{imppat}: Indian medicinal plants database for cultural diversity
+    \item \textbf{IMPPAT} \cite{24}: Indian medicinal plants database for cultural diversity
     \item \textbf{PubChem}: Chemical structures and bioactivity profiles
-    \item \textbf{DisGeNET} (v7.0) \cite{disgenet}: Gene-disease associations
+    \item \textbf{DisGeNET} (v7.0) \cite{25}: Gene-disease associations
 \end{itemize}
 
 \subsubsection{Graph Schema and Construction}
@@ -246,7 +262,7 @@ where:
 \end{itemize}
 
 \subsubsection{Node2Vec Embedding}
-We apply Node2Vec \cite{node2vec} to learn 64-dimensional embeddings:
+We apply Node2Vec \cite{21} to learn 64-dimensional embeddings:
 
 \begin{equation}
 \max_{f} \sum_{u \in V} \log P(N_S(u) | f(u))
@@ -436,7 +452,7 @@ When enabled (default), the drug database provides:
 \textbf{Example Output - Common Cold:}
 \begin{itemize}
     \item \textit{Herbal}: Ginger (89\% relevance), Echinacea (86\%), Elderberry (83\%)
-    \item \textit{Pharmaceutical}: Paracetamol, Cetirizine, Pseudoephedrine
+    \item \raggedright \textit{Pharmaceutical:} Paracetamol, Cetirizine, Pseudoephedrine
     \item \textit{Safety}: No major contraindications for general population
 \end{itemize}
 
@@ -523,167 +539,80 @@ We thank CMR Institute of Technology for supporting this research work. We ackno
 \bibliographystyle{IEEEtran}
 \begin{thebibliography}{00}
 
-\bibitem{mimic}
-A. Johnson et al., ``MIMIC-III: A critical care database,'' Scientific Data, 2016.
+\bibitem{1}
+S. Ekins, A. C. Puhl, K. M. Zorn, T. R. Lane, D. P. Russo, J. J. Klein, A. J. Hickey, and A. M. Clark, ``Exploiting machine learning for end-to-end drug discovery and development,'' \textit{Nature Materials}, vol. 18, no. 5, pp. 435--441, May 2019.
 
-\bibitem{ekins2019}
-S. Ekins et al., ``Machine learning for drug discovery,'' Nature Materials, 2019.
+\bibitem{2}
+F. Doshi-Velez and B. Kim, ``Towards a rigorous science of interpretable machine learning,'' \textit{arXiv preprint arXiv:1702.08608}, 2017.
 
-\bibitem{xai_health}
-F. Doshi-Velez and B. Kim, ``Interpretability in ML,'' arXiv:1702.08608, 2017.
+\bibitem{3}
+A. Adadi and M. Berrada, ``Peeking inside the black-box: A survey on explainable artificial intelligence (XAI),'' \textit{IEEE Access}, vol. 6, pp. 52138--52160, 2018.
 
-\bibitem{han2021}
-S. Han et al., ``Explainable AI for healthcare,'' IEEE Access, 2021.
+\bibitem{4}
+D. Robinson and A. Lorenc, ``Integrating traditional medicine into Western healthcare: Feasibility and acceptability,'' \textit{Complementary Therapies in Medicine}, vol. 22, no. 3, pp. 546--552, June 2014.
 
-\bibitem{joachims1998}
-T. Joachims, ``Text categorization with SVMs,'' ECML, 1998.
+\bibitem{5}
+World Health Organization, ``WHO traditional medicine strategy: 2014--2023,'' Geneva, Switzerland, 2013.
 
-\bibitem{niculescu2005}
-A. Niculescu-Mizil and R. Caruana, ``Predicting good probabilities,'' ICML, 2005.
+\bibitem{6}
+E. S. Berner, Ed., \textit{Clinical Decision Support Systems: Theory and Practice}, 2nd ed. New York, NY, USA: Springer, 2007.
 
-\bibitem{guo2017}
-C. Guo et al., ``Calibration of neural networks,'' ICML, 2017.
+\bibitem{7}
+J. Morley, C. C. V. Machado, C. Burr, J. Cowls, I. Joshi, M. Taddeo, and L. Floridi, ``The ethics of AI in health care: A mapping review,'' \textit{Social Science \& Medicine}, vol. 260, p. 113172, Sept. 2020.
 
-\bibitem{ribeiro2016}
-M. Ribeiro et al., ``LIME,'' KDD, 2016.
+\bibitem{8}
+A. Niculescu-Mizil and R. Caruana, ``Predicting good probabilities with supervised learning,'' in \textit{Proc. 22nd Int. Conf. Machine Learning (ICML)}, Bonn, Germany, 2005, pp. 625--632.
 
-\bibitem{lundberg2017}
-S. Lundberg and S.-I. Lee, ``SHAP,'' NeurIPS, 2017.
+\bibitem{9}
+C. Guo, G. Pleiss, Y. Sun, and K. Q. Weinberger, ``On calibration of modern neural networks,'' in \textit{Proc. 34th Int. Conf. Machine Learning (ICML)}, Sydney, Australia, 2017, pp. 1321--1330.
 
-\bibitem{caruana2015}
-R. Caruana et al., ``Intelligible models for healthcare,'' KDD, 2015.
+\bibitem{10}
+J. Lee, W. Yoon, S. Kim, D. Kim, S. Kim, C. H. So, and J. Kang, ``BioBERT: A pre-trained biomedical language representation model for biomedical text mining,'' \textit{Bioinformatics}, vol. 36, no. 4, pp. 1234--1240, Feb. 2020.
 
-\bibitem{alizadehsani2024}
-R. Alizadehsani et al., ``XAI for drug discovery,'' IEEE Access, 2024.
+\bibitem{11}
+K. Huang, J. Altosaar, and R. Ranganath, ``ClinicalBERT: Modeling clinical notes and predicting hospital readmission,'' \textit{arXiv preprint arXiv:1904.05342}, 2019.
 
-\bibitem{arrieta2020}
-A. Arrieta et al., ``Explainable AI: Concepts and challenges,'' Information Fusion, 2020.
+\bibitem{12}
+Q. Wang, Z. Mao, B. Wang, and L. Guo, ``Knowledge graph embedding: A survey of approaches and applications,'' \textit{IEEE Trans. Knowledge and Data Engineering}, vol. 29, no. 12, pp. 2724--2743, Dec. 2017.
 
-\bibitem{kg_survey2019}
-W. Hogan et al., ``Knowledge Graphs,'' ACM Computing Surveys, 2019.
+\bibitem{13}
+M. Zitnik, M. Agrawal, and J. Leskovec, ``Modeling polypharmacy side effects with graph convolutional networks,'' \textit{Bioinformatics}, vol. 34, no. 13, pp. i457--i466, July 2018.
 
-\bibitem{rajabi2021}
-M. Rajabi et al., ``KG and XAI in healthcare,'' Information Fusion, 2021.
+\bibitem{14}
+D. Amodei, C. Olah, J. Steinhardt, P. Christiano, J. Schulman, and D. Mané, ``Concrete problems in AI safety,'' \textit{arXiv preprint arXiv:1606.06565}, 2016.
 
-\bibitem{node2vec}
-A. Grover and J. Leskovec, ``Node2vec,'' KDD, 2016.
+\bibitem{15}
+A. A. Izzo and E. Ernst, ``Interactions between herbal medicines and prescribed drugs: An updated systematic review,'' \textit{Drugs}, vol. 69, no. 13, pp. 1777--1798, Sept. 2009.
 
-\bibitem{zhang2024}
-J. Zhang et al., ``Herbal recommendation,'' Information Sciences, 2024.
+\bibitem{16}
+S. M. Lundberg and S.-I. Lee, ``A unified approach to interpreting model predictions,'' in \textit{Proc. 31st Int. Conf. Neural Information Processing Systems (NeurIPS)}, Long Beach, CA, USA, 2017, pp. 4765--4774.
 
-\bibitem{wang2017}
-Z. Wang et al., ``Drug repurposing via network modeling,'' Briefings in Bioinformatics, 2017.
+\bibitem{17}
+R. Caruana, Y. Lou, J. Gehrke, P. Koch, M. Sturm, and N. Elhadad, ``Intelligible models for healthcare: Predicting pneumonia risk and hospital 30-day readmission,'' in \textit{Proc. 21st ACM SIGKDD Int. Conf. Knowledge Discovery Data Mining (KDD)}, Sydney, Australia, 2015, pp. 1721--1730.
 
-\bibitem{shortliffe1984}
-E. Shortliffe, ``Medical informatics research agenda,'' Journal of Medical Systems, 1984.
+\bibitem{18}
+M. T. Ribeiro, S. Singh, and C. Guestrin, ``Why should I trust you?: Explaining the predictions of any classifier,'' in \textit{Proc. 22nd ACM SIGKDD Int. Conf. Knowledge Discovery Data Mining (KDD)}, San Francisco, CA, USA, 2016, pp. 1135--1144.
 
-\bibitem{osheroff2007}
-J. Osheroff et al., ``Decision support guidelines,'' HIMSS, 2007.
+\bibitem{19}
+R. Alizadehsani, J. Roshanzamir, A. Hussain, A. Khosravi, A. Koohestani, M. H. Zangooei, M. Abdar, A. Beykikhoshk, A. Shoeibi, A. Zare, M. Panahiazar, S. Nahavandi, D. Chakraborty, A. Puri, U. R. Acharya, and S. Nahavandi, ``Handling of uncertainty in medical data using machine learning and probability theory techniques: A review of 30 years (1991--2020),'' \textit{IEEE Access}, vol. 12, pp. 5283--5323, 2024.
 
-\bibitem{streamlit_blog}
-Streamlit documentation, 2019.
+\bibitem{20}
+A. Hogan, E. Blomqvist, M. Cochez, C. d'Amato, G. de Melo, C. Gutierrez, J. E. L. Gayo, S. Kirrane, S. Neumaier, A. Polleres, R. Navigli, A.-C. N. Ngomo, S. M. Rashid, A. Rula, L. Schmelzeisen, J. Sequeda, S. Staab, and A. Zimmermann, ``Knowledge graphs,'' \textit{ACM Computing Surveys}, vol. 54, no. 4, pp. 1--37, May 2021.
 
-\bibitem{scikit-learn}
-Pedregosa et al., ``Scikit-Learn,'' JMLR, 2011.
+\bibitem{21}
+A. Grover and J. Leskovec, ``node2vec: Scalable feature learning for networks,'' in \textit{Proc. 22nd ACM SIGKDD Int. Conf. Knowledge Discovery Data Mining (KDD)}, San Francisco, CA, USA, 2016, pp. 855--864.
 
-\bibitem{networkx}
-A. Hagberg et al., ``NetworkX,'' SciPy, 2008.
+\bibitem{22}
+O. Bodenreider, ``The Unified Medical Language System (UMLS): Integrating biomedical terminology,'' \textit{Nucleic Acids Research}, vol. 32, no. suppl\_1, pp. D267--D270, Jan. 2004.
 
-\bibitem{ye2011}
-H. Ye et al., ``HIT: linking herbal active ingredients to targets,'' Nucleic Acids Research, vol. 39, pp. D1055-D1059, 2011.
+\bibitem{23}
+H. Ye, L. Ye, H. Kang, D. Zhang, L. Tao, K. Tang, X. Liu, R. Zhu, Q. Liu, Y. Z. Chen, Y. Li, and Z. Cao, ``HIT: Linking herbal active ingredients to targets,'' \textit{Nucleic Acids Research}, vol. 39, no. suppl\_1, pp. D1055--D1059, Jan. 2011.
 
-\bibitem{chembl}
-A. Gaulton et al., ``ChEMBL: a large-scale bioactivity database for drug discovery,'' Nucleic Acids Research, vol. 40, pp. D1100-D1107, 2012.
+\bibitem{24}
+K. K. Mohanraj, B. S. Karthikeyan, R. P. Vivek-Ananth, R. P. B. Chand, S. R. Aparna, P. Mangalapandi, and A. Samal, ``IMPPAT: A curated database of Indian Medicinal Plants, Phytochemistry and Therapeutics,'' \textit{Scientific Reports}, vol. 8, no. 1, p. 4329, Mar. 2018.
 
-\bibitem{disgenet}
-J. Piñero et al., ``DisGeNET: a comprehensive platform integrating information on human disease-associated genes,'' Nucleic Acids Research, vol. 45, pp. D833-D839, 2017.
-
-\bibitem{umls}
-O. Bodenreider, ``The Unified Medical Language System (UMLS),'' Nucleic Acids Research, vol. 32, pp. D267-D270, 2004.
-
-\bibitem{biobert}
-J. Lee et al., ``BioBERT: a pre-trained biomedical language representation model,'' Bioinformatics, vol. 36, no. 4, pp. 1234-1240, 2020.
-
-\bibitem{clinicalbert}
-K. Huang et al., ``ClinicalBERT: modeling clinical notes and predicting hospital readmission,'' arXiv:1904.05342, 2019.
-
-\bibitem{imppat}
-P. Mohanraj et al., ``IMPPAT: A curated database of Indian Medicinal Plants, Phytochemistry and Therapeutics,'' Scientific Reports, vol. 8, 2018.
-
-\bibitem{pubchem}
-S. Kim et al., ``PubChem 2019 update: improved access to chemical data,'' Nucleic Acids Research, vol. 47, pp. D1102-D1109, 2019.
-
-\bibitem{xgboost}
-T. Chen and C. Guestrin, ``XGBoost: A scalable tree boosting system,'' KDD, 2016.
-
-\bibitem{random_forest}
-L. Breiman, ``Random forests,'' Machine Learning, vol. 45, no. 1, pp. 5-32, 2001.
-
-\bibitem{feature_importance}
-C. Strobl et al., ``Conditional variable importance for random forests,'' BMC Bioinformatics, vol. 9, p. 307, 2008.
-
-\bibitem{ensemble_methods}
-T. Dietterich, ``Ensemble methods in machine learning,'' Multiple Classifier Systems, Springer, 2000.
-
-\bibitem{gradient_boosting}
-J. Friedman, ``Greedy function approximation: A gradient boosting machine,'' Annals of Statistics, vol. 29, no. 5, pp. 1189-1232, 2001.
-
-\bibitem{knowledge_graph_embedding}
-Q. Wang et al., ``Knowledge graph embedding: A survey,'' IEEE Transactions on Knowledge and Data Engineering, vol. 29, no. 12, pp. 2724-2743, 2017.
-
-\bibitem{bert}
-J. Devlin et al., ``BERT: Pre-training of deep bidirectional transformers for language understanding,'' NAACL, 2019.
-
-\bibitem{explainability_survey}
-A. Adadi and M. Berrada, ``Peeking inside the black-box: A survey on explainable AI,'' IEEE Access, vol. 6, pp. 52138-52160, 2018.
-
-\bibitem{medical_ai_ethics}
-M. Morley et al., ``Ethics of AI in medicine,'' Journal of Medical Ethics, vol. 46, pp. 94-98, 2020.
-
-\bibitem{who_traditional_medicine}
-World Health Organization, ``WHO traditional medicine strategy: 2014-2023,'' WHO Press, 2013.
-
-\bibitem{herb_drug_interactions}
-A. Izzo and E. Ernst, ``Interactions between herbal medicines and prescribed drugs: An update,'' Drugs, vol. 69, no. 13, pp. 1777-1798, 2009.
-
-\bibitem{clinical_decision_support}
-E. Berner, ``Clinical decision support systems: Theory and practice,'' Springer, 2007.
-
-\bibitem{synthetic_data}
-S. I. Nikolenko, ``Synthetic data for deep learning,'' Springer, 2021.
-
-\bibitem{drugbank}
-D. S. Wishart et al., ``DrugBank 5.0: A major update to the DrugBank database for 2018,'' Nucleic Acids Research, vol. 46, pp. D1074-D1082, 2018.
-
-\bibitem{symptom_checkers}
-H. L. Semigran et al., ``Evaluation of symptom checkers for self diagnosis and triage,'' BMJ, vol. 351, 2015.
-
-\bibitem{ml_healthcare}
-A. Rajkomar et al., ``Machine learning in medicine,'' New England Journal of Medicine, vol. 380, no. 14, pp. 1347-1358, 2019.
-
-\bibitem{tfidf_medical}
-M. S. Simpson and D. Demner-Fushman, ``Biomedical text mining: A survey of recent progress,'' Mining Text Data, Springer, pp. 465-517, 2012.
-
-\bibitem{traditional_medicine_integration}
-D. Robinson and A. Lorenc, ``Integrating traditional medicine into Western healthcare,'' Complementary Therapies in Medicine, vol. 22, pp. 546-552, 2014.
-
-\bibitem{ayurveda_research}
-S. Mukherjee et al., ``Ayurvedic medicine and drug development: A systems biology approach,'' Frontiers in Pharmacology, vol. 8, p. 229, 2017.
-
-\bibitem{herbal_efficacy}
-P. A. G. M. De Smet, ``Health risks of herbal remedies: An update,'' Clinical Pharmacology & Therapeutics, vol. 76, no. 1, pp. 1-17, 2004.
-
-\bibitem{graph_embeddings_bio}
-M. Zitnik et al., ``Modeling polypharmacy side effects with graph convolutional networks,'' Bioinformatics, vol. 34, pp. i457-i466, 2018.
-
-\bibitem{calibration_healthcare}
-B. Van Calster et al., ``Calibration of risk prediction models: Impact on decision-analytic performance,'' Medical Decision Making, vol. 35, pp. 162-169, 2015.
-
-\bibitem{uncertainty_medical_ai}
-Y. Gal and Z. Ghahramani, ``Dropout as a Bayesian approximation: Representing model uncertainty in deep learning,'' ICML, 2016.
-
-\bibitem{safety_critical_ai}
-A. Amodei et al., ``Concrete problems in AI safety,'' arXiv:1606.06565, 2016.
+\bibitem{25}
+J. Piñero, À. Bravo, N. Queralt-Rosinach, A. Gutiérrez-Sacristán, J. Deu-Pons, E. Centeno, J. García-García, F. Sanz, and L. I. Furlong, ``DisGeNET: A comprehensive platform integrating information on human disease-associated genes and variants,'' \textit{Nucleic Acids Research}, vol. 45, no. D1, pp. D833--D839, Jan. 2017.
 
 \end{thebibliography}
 
